@@ -1,0 +1,15 @@
+{
+  "root": true,
+  "extends": ["./node_modules/sanctuary-style/eslint-es3.json"],
+  "parserOptions": {
+    "sourceType": "module"
+  },
+  "overrides": [
+    {
+      "files": ["*.md"],
+      "plugins": ["markdown"],
+      "env": {"es6": true},
+      "globals": {"createReducer": false, "noopAction": false}
+    }
+  ]
+}
