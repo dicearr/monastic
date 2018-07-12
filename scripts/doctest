@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euf -o pipefail
+
+# shellcheck source=functions
+source "${BASH_SOURCE%/*}/../node_modules/sanctuary-scripts/functions"
+
+prefix="$(get comment-prefix)"
+
+# TODO: waiting for https://github.com/davidchambers/doctest/issues/99
+npm run prepublishOnly -- --silent -o index.temp.js
+trap "rm -f index.temp.js" EXIT
+
+node_modules/.bin/doctest --module commonjs --prefix "$prefix" -- index.temp.js

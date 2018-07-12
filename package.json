@@ -1,0 +1,46 @@
+{
+  "name": "warp-state",
+  "version": "0.0.1",
+  "description": "State control Monad.",
+  "main": "index",
+  "module": "index.mjs",
+  "scripts": {
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
+    "deps": "depcheck --ignores='sanctuary-style'",
+    "doctest": "sanctuary-doctest",
+    "licensetest": "license-checker --production --onlyAllow 'MIT'",
+    "lint": "sanctuary-lint",
+    "prepublishOnly": "rollup -c rollup.config.mjs",
+    "release": "sanctuary-release",
+    "test": "npm run lint && sanctuary-test && npm run doctest"
+  },
+  "author": "Diego Ceresuela <dcerearr@gmail.com> (https://github.com/dicearr)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/wearereasonablepeople/warp-state.git"
+  },
+  "files": [
+    "/index.js",
+    "/index.mjs",
+    "/LICENSE",
+    "/package.json",
+    "README.md"
+  ],
+  "devDependencies": {
+    "coveralls": "^3.0.2",
+    "depcheck": "^0.6.9",
+    "esm": "^3.0.69",
+    "fantasy-laws": "^1.1.0",
+    "jsverify": "^0.8.3",
+    "license-checker": "^20.1.0",
+    "nyc": "^12.0.2",
+    "rollup": "^0.63.4",
+    "sanctuary-maybe": "^1.0.0",
+    "sanctuary-scripts": "^2.0.0",
+    "sanctuary-style": "^2.0.0"
+  },
+  "dependencies": {
+    "sanctuary-type-classes": "^9.0.0"
+  }
+}
