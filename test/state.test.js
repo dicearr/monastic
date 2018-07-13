@@ -5,8 +5,9 @@ import State from '..';
 suite ('State', function() {
   test ('#modify', function() {
     var state = Math.random ();
-    var res = State.modify (_ => state).exec ();
-    assert.deepStrictEqual (res, state);
+    var res = State.modify (_ => state).run ();
+    assert.deepStrictEqual (res.state, state);
+    assert.equal (res.value, undefined);
   });
   test ('#put', function() {
     var state = Math.random ();
