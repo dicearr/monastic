@@ -1,10 +1,10 @@
-// import assert from 'assert';
 import {
   Functor,
   Apply,
   Applicative,
   Chain
 } from 'fantasy-laws';
+
 import {
   letrec,
   oneof,
@@ -14,7 +14,7 @@ import {
   falsy,
   constant as _k
 } from 'jsverify';
-// import show from 'sanctuary-show';
+
 import Z from 'sanctuary-type-classes';
 
 import State from '..';
@@ -59,39 +59,41 @@ function of(x) {
 function sub3(x) { return x - 3; }
 function mul3(x) { return x * 3; }
 
-suite ('Functor', function() {
-  test ('identity', Functor (eq).identity (anyState));
-  test ('composition', Functor (eq).composition (
-    StateArb (number),
-    _k (sub3),
-    _k (mul3)
-  ));
-});
+suite ('Compliance to Fantasy Land', function() {
+  suite ('Functor', function() {
+    test ('identity', Functor (eq).identity (anyState));
+    test ('composition', Functor (eq).composition (
+      StateArb (number),
+      _k (sub3),
+      _k (mul3)
+    ));
+  });
 
-suite ('Apply', function() {
-  test ('composition', Apply (eq).composition (
-    StateArb (_k (sub3)),
-    StateArb (_k (mul3)),
-    StateArb (number)
-  ));
-});
+  suite ('Apply', function() {
+    test ('composition', Apply (eq).composition (
+      StateArb (_k (sub3)),
+      StateArb (_k (mul3)),
+      StateArb (number)
+    ));
+  });
 
-suite ('Applicative', function() {
-  test ('identity', Applicative (eq, State).identity (StateArb (number)));
-  test ('homomorphism', Applicative (eq, State).homomorphism (
-    _k (sub3),
-    number
-  ));
-  test ('interchange', Applicative (eq, State).interchange (
-    StateArb (_k (sub3)),
-    number
-  ));
-});
+  suite ('Applicative', function() {
+    test ('identity', Applicative (eq, State).identity (StateArb (number)));
+    test ('homomorphism', Applicative (eq, State).homomorphism (
+      _k (sub3),
+      number
+    ));
+    test ('interchange', Applicative (eq, State).interchange (
+      StateArb (_k (sub3)),
+      number
+    ));
+  });
 
-suite ('Chain', function() {
-  test ('associativity', Chain (eq).associativity (
-    StateArb (number),
-    _k (B (of) (sub3)),
-    _k (B (of) (mul3))
-  ));
+  suite ('Chain', function() {
+    test ('associativity', Chain (eq).associativity (
+      StateArb (number),
+      _k (B (of) (sub3)),
+      _k (B (of) (mul3))
+    ));
+  });
 });
