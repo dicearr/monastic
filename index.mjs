@@ -1,4 +1,4 @@
-// compose :: ((b -> c), (a -> b)) -> (a -> c)
+// compose :: (b -> c, a -> b) -> (a -> c)
 export function compose(f, g) {
   return function(v) {
     return f (g (v));
@@ -28,14 +28,14 @@ State.get = new State (function(state) {
   return {state: state, value: state};
 });
 
-// modify :: (s -> s) -> State s a
+// modify :: (s -> s) -> State s Null
 State.modify = function(f) {
   return new State (function(state) {
     return {state: f (state), value: null};
   });
 };
 
-// put :: s -> State s a
+// put :: s -> State s Null
 State.put = function(state) {
   return State.modify (constant (state));
 };
@@ -63,6 +63,7 @@ State.prototype.map = function(f) {
   return this.chain (compose (f, State.of));
 };
 
+// ap :: State s (a -> b) ~> State s a -> State s b
 State.prototype.ap = function(a) {
   return this.chain (function(f) {
     return a.map (f);
