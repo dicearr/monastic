@@ -77,41 +77,45 @@ State.StateT = function(M) {
     this.run = run;
   }
 
-  // of :: a -> StateT s a
-  StateT.of = function(value) {
+  // of :: Monad m => a -> StateT s m a
+  StateT.of  = function(value) {
      return new StateT (function(state) {
        return M.of ({state: state, value: value});
      });
    };
 
-  // get :: StateT s s
+  // get :: Monad m => StateT s m s
   StateT.get = new StateT (function(state) {
     return M.of ({state: state, value: state});
   });
 
-  // modify :: (s -> s) -> StateT s a
+  // modify :: Monad m => (s -> s) -> StateT s m Null
   StateT.modify = function(f) {
     return new StateT (function(state) {
       return M.of ({state: f (state), value: null});
     });
   };
 
-  // put :: s -> StateT s a
+  // put :: Monad m => s -> StateT s m Null
   StateT.put = function(state) {
     return StateT.modify (constant (state));
   };
 
-  // eval :: StateT s a ~> s -> a
+  // eval :: Monad m => StateT s m a ~> s -> m a
   StateT.prototype.eval = function(state) {
-    return this.run (state).value;
+    return this.run (state).map (function(res) {
+      return res.value;
+    });
   };
 
-  // exec :: StateT s a ~> s -> s
+  // exec :: Monad m => StateT s m a ~> s -> m s
   StateT.prototype.exec = function(state) {
-    return this.run (state).state;
+    return this.run (state).map (function(res) {
+      return res.state;
+    });
   };
 
-  // chain :: StateT s a ~> (a -> StateT s b) -> StateT s b
+  // chain :: Monad m => StateT s m a ~> (a -> StateT s m b) -> StateT s m b
   StateT.prototype.chain = function(f) {
     var self = this;
     return new StateT (function(s) {
@@ -120,13 +124,14 @@ State.StateT = function(M) {
     });
   };
 
-  // map :: StateT s a ~> (a -> b) -> StateT s b
+  // map :: Monad m => StateT s m a ~> (a -> b) -> StateT s m b
   StateT.prototype.map = function(f) {
     return this.chain (compose (f, StateT.of));
   };
 
+  // ap :: Monad m => State s m a ~> State s m (a -> b) -> State s m b
   StateT.prototype.ap = function(a) {
-    return this.chain (f => a.map (f));
+    return this.map (a.eval ());
   };
 
   return StateT;
