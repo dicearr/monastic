@@ -5,7 +5,7 @@
   "main": "index.mjs",
   "module": "index.mjs",
   "scripts": {
-    "coverage": "nyc report --reporter=html",
+    "coverage": "nyc report --reporter=text-lcov | coveralls",
     "doctest": "sanctuary-doctest",
     "lint": "sanctuary-lint",
     "release": "sanctuary-release",
@@ -24,6 +24,7 @@
     "README.md"
   ],
   "devDependencies": {
+    "coveralls": "^3.0.2",
     "esm": "^3.0.69",
     "fantasy-laws": "^1.1.0",
     "jsverify": "^0.8.3",
