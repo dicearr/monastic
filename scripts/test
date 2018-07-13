@@ -1,0 +1,10 @@
+#!/usr/local/bin/bash
+
+set -euf -o pipefail
+
+source "${BASH_SOURCE%/*}/../node_modules/sanctuary-scripts/functions"
+
+branches="$(get min-branch-coverage)"
+
+node_modules/.bin/nyc --extension .mjs node_modules/.bin/mocha
+node_modules/.bin/nyc check-coverage --branches $branches

@@ -1,0 +1,3 @@
+#!/usr/local/bin/bash
+
+echo 'Doctests cannot run on mjs files. Skipping :('

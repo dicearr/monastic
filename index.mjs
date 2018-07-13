@@ -1,3 +1,5 @@
+//. # Warp State
+
 // compose :: (b -> c, a -> b) -> (a -> c)
 export function compose(f, g) {
   return function(v) {
@@ -17,7 +19,7 @@ export default function State(run) {
 }
 
 // of :: a -> State s a
-State.of = function(value) {
+State.of = State['fantasy-land/of'] = function(value) {
   return new State (function(state) {
     return {state: state, value: value};
   });
@@ -51,23 +53,22 @@ State.prototype.exec = function(state) {
 };
 
 // chain :: State s a ~> (a -> State s b) -> State s b
-State.prototype.chain = function(f) {
-  return new State (s => {
-    const r = this.run (s);
+State.prototype['fantasy-land/chain'] = function(f) {
+  var self = this;
+  return new State (function(s) {
+    var r = self.run (s);
     return f (r.value).run (r.state);
   });
 };
 
 // map :: State s a ~> (a -> b) -> State s b
-State.prototype.map = function(f) {
-  return this.chain (compose (f, State.of));
+State.prototype['fantasy-land/map'] = function(f) {
+  return this['fantasy-land/chain'] (compose (State.of, f));
 };
 
-// ap :: State s (a -> b) ~> State s a -> State s b
-State.prototype.ap = function(a) {
-  return this.chain (function(f) {
-    return a.map (f);
-  });
+// ap :: State s a ~> State s (a -> b) -> State s b
+State.prototype['fantasy-land/ap'] = function(a) {
+  return this['fantasy-land/map'] (a.eval ());
 };
 
 State.StateT = function(M) {
@@ -112,8 +113,9 @@ State.StateT = function(M) {
 
   // chain :: StateT s a ~> (a -> StateT s b) -> StateT s b
   StateT.prototype.chain = function(f) {
-    return new StateT (s => {
-      const result = this.run (s);
+    var self = this;
+    return new StateT (function(s) {
+      var result = self.run (s);
       return result.chain (({value, state}) => f (value).run (state));
     });
   };
@@ -123,7 +125,7 @@ State.StateT = function(M) {
     return this.chain (compose (f, StateT.of));
   };
 
-  State.prototype.ap = function(a) {
+  StateT.prototype.ap = function(a) {
     return this.chain (f => a.map (f));
   };
 
