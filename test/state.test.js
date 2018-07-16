@@ -11,7 +11,7 @@ import {
 suite ('Functions', function() {
   test ('modify', function() {
     var state = Math.random ();
-    var res = modify (x => x + 1).run (state);
+    var res = modify (function(x) { return x + 1; }).run (state);
     assert.deepStrictEqual (res.state, state + 1);
     assert.equal (res.value, undefined);
   });

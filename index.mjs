@@ -1,4 +1,5 @@
 //. # Warp State
+import Z from 'sanctuary-type-classes';
 
 // compose :: (b -> c, a -> b) -> (a -> c)
 export function compose(f, g) {
@@ -20,13 +21,11 @@ export function State(run) {
 }
 
 // of :: a -> State s a
-State['fantasy-land/of'] = of;
-
-export function of(value) {
+State['fantasy-land/of'] = function of(value) {
   return new State (function(state) {
     return {state: state, value: value};
   });
-}
+};
 
 // get :: State s s
 export var get = new State (function(state) {
@@ -70,7 +69,7 @@ State.prototype['fantasy-land/chain'] = function chain(f) {
 
 // map :: State s a ~> (a -> b) -> State s b
 State.prototype['fantasy-land/map'] = function map(f) {
-  return this['fantasy-land/chain'] (compose (of, f));
+  return this['fantasy-land/chain'] (compose (State['fantasy-land/of'], f));
 };
 
 // ap :: State s a ~> State s (a -> b) -> State s b
@@ -78,6 +77,7 @@ State.prototype['fantasy-land/ap'] = function ap(a) {
   return this['fantasy-land/map'] (evalState () (a));
 };
 
+// StateT :: Monad m => m -> StateT s m a
 export function StateT(M) {
 
   function StateT(run) {
@@ -85,60 +85,75 @@ export function StateT(M) {
   }
 
   // of :: Monad m => a -> StateT s m a
-  StateT.of  = function(value) {
+  StateT['fantasy-land/of'] = function of(value) {
      return new StateT (function(state) {
-       return M.of ({state: state, value: value});
+       return Z.of (M, {state: state, value: value});
      });
    };
 
   // get :: Monad m => StateT s m s
   StateT.get = new StateT (function(state) {
-    return M.of ({state: state, value: state});
+    return Z.of (M, {state: state, value: state});
   });
 
   // modify :: Monad m => (s -> s) -> StateT s m Null
-  StateT.modify = function(f) {
+  StateT.modify = function modify(f) {
     return new StateT (function(state) {
-      return M.of ({state: f (state), value: null});
+      return Z.of (M, {state: f (state), value: null});
     });
   };
 
   // put :: Monad m => s -> StateT s m Null
-  StateT.put = function(state) {
-    return StateT.modify (constant (state));
+  StateT.put = function put(state) {
+    return modify (constant (state));
   };
 
-  // eval :: Monad m => StateT s m a ~> s -> m a
-  StateT.prototype.eval = function(state) {
-    return this.run (state).map (function(res) {
-      return res.value;
-    });
+  // evalState :: Monad m => s -> StateT s m a -> m a
+  StateT.evalState = function evalState(state) {
+    return function(m) {
+      return Z.map (
+        function(res) { return res.value; },
+        m.run (state)
+      );
+    };
   };
 
-  // exec :: Monad m => StateT s m a ~> s -> m s
-  StateT.prototype.exec = function(state) {
-    return this.run (state).map (function(res) {
-      return res.state;
-    });
+  // execState :: Monad m => s -> StateT s m a -> m s
+  StateT.execState = function execState(state) {
+    return function(m) {
+      return Z.map (
+        function(res) { return res.state; },
+        m.run (state)
+      );
+    };
   };
 
   // chain :: Monad m => StateT s m a ~> (a -> StateT s m b) -> StateT s m b
-  StateT.prototype.chain = function(f) {
+  StateT.prototype['fantasy-land/chain'] = function(f) {
     var self = this;
     return new StateT (function(s) {
-      var result = self.run (s);
-      return result.chain (({value, state}) => f (value).run (state));
+      return Z.chain (
+        function(state) { return f (state.value).run (state.state); },
+        self.run (s)
+      );
     });
   };
 
   // map :: Monad m => StateT s m a ~> (a -> b) -> StateT s m b
-  StateT.prototype.map = function(f) {
-    return this.chain (compose (f, StateT.of));
+  StateT.prototype['fantasy-land/map'] = function(f) {
+    return this['fantasy-land/chain'] (compose (StateT['fantasy-land/of'], f));
   };
 
   // ap :: Monad m => State s m a ~> State s m (a -> b) -> State s m b
-  StateT.prototype.ap = function(a) {
-    return this.map (a.eval ());
+  StateT.prototype['fantasy-land/ap'] = function(mf) {
+    var mx = this;
+    return new StateT (state => {
+      var get = StateT.evalState (state); // Monad {st, val}
+      return Z.map (
+        function(value) { return {state: state, value: value}; },
+        Z.ap (get (mf), get (mx))
+      );
+    });
   };
 
   return StateT;
