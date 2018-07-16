@@ -14,46 +14,52 @@ export function constant(v) {
   };
 }
 
-export default function State(run) {
+export function State(run) {
   this.run = run;
 }
 
 // of :: a -> State s a
-State.of = State['fantasy-land/of'] = function(value) {
+State['fantasy-land/of'] = of;
+
+export function of(value) {
   return new State (function(state) {
     return {state: state, value: value};
   });
-};
+}
 
 // get :: State s s
-State.get = new State (function(state) {
+export var get = new State (function(state) {
   return {state: state, value: state};
 });
 
 // modify :: (s -> s) -> State s Null
-State.modify = function(f) {
+export function modify(f) {
   return new State (function(state) {
     return {state: f (state), value: null};
   });
-};
+}
 
 // put :: s -> State s Null
-State.put = function(state) {
-  return State.modify (constant (state));
-};
+export function put(state) {
+  return modify (constant (state));
+}
 
-// eval :: State s a ~> s -> a
-State.prototype.eval = function(state) {
-  return this.run (state).value;
-};
+// evalState :: s -> State s a -> a
+export function evalState(state) {
+  return function(m) {
+    return m.run (state).value;
+  };
+}
 
-// exec :: State s a ~> s -> s
-State.prototype.exec = function(state) {
-  return this.run (state).state;
-};
+// execState :: s -> State s a -> s
+export function execState(state) {
+  return function(m) {
+    return m.run (state).state;
+  };
+}
 
 // chain :: State s a ~> (a -> State s b) -> State s b
-State.prototype['fantasy-land/chain'] = function(f) {
+State.prototype['fantasy-land/chain'] = function chain(f) {
   var self = this;
   return new State (function(s) {
     var r = self.run (s);
@@ -62,16 +68,16 @@ State.prototype['fantasy-land/chain'] = function(f) {
 };
 
 // map :: State s a ~> (a -> b) -> State s b
-State.prototype['fantasy-land/map'] = function(f) {
-  return this['fantasy-land/chain'] (compose (State.of, f));
+State.prototype['fantasy-land/map'] = function map(f) {
+  return this['fantasy-land/chain'] (compose (of, f));
 };
 
 // ap :: State s a ~> State s (a -> b) -> State s b
-State.prototype['fantasy-land/ap'] = function(a) {
-  return this['fantasy-land/map'] (a.eval ());
+State.prototype['fantasy-land/ap'] = function ap(a) {
+  return this['fantasy-land/map'] (evalState () (a));
 };
 
-State.StateT = function(M) {
+export function StateT(M) {
 
   function StateT(run) {
     this.run = run;
@@ -135,4 +141,4 @@ State.StateT = function(M) {
   };
 
   return StateT;
-};
+}

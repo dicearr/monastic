@@ -17,13 +17,13 @@ import {
 
 import Z from 'sanctuary-type-classes';
 
-import State from '..';
+import {State, of, evalState} from '..';
 
 function StateArb(varb) {
-  function getValue(m) { return m.eval (); }
+  function getValue(m) { return evalState () (m); }
   function toStr(m) { return JSON.stringify (getValue (m)); }
 
-  return varb.smap (State.of, getValue, toStr);
+  return varb.smap (of, getValue, toStr);
 }
 
 function B(f) {
@@ -52,7 +52,7 @@ function eq(actual, expected) {
   return Z.equals (actual.run (state), expected.run (state));
 }
 
-function of(x) {
+function _of(x) {
   return Z.of (State, x);
 }
 
@@ -92,8 +92,8 @@ suite ('Compliance to Fantasy Land', function() {
   suite ('Chain', function() {
     test ('associativity', Chain (eq).associativity (
       StateArb (number),
-      _k (B (of) (sub3)),
-      _k (B (of) (mul3))
+      _k (B (_of) (sub3)),
+      _k (B (_of) (mul3))
     ));
   });
 });
