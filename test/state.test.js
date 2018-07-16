@@ -1,4 +1,5 @@
 import assert from 'assert';
+import Z from 'sanctuary-type-classes';
 
 import {
   put,
@@ -21,8 +22,9 @@ suite ('Functions', function() {
   });
   test ('get', function() {
     var state = Math.random ();
-    var res = put (state)['fantasy-land/chain'] (
-      function() { return get; }
+    var res = Z.chain (
+      function() { return get; },
+      put (state)
     ).run ();
     assert.deepStrictEqual (res, {
       state: state,

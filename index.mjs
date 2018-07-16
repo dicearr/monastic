@@ -15,6 +15,7 @@ export function constant(v) {
 }
 
 export function State(run) {
+  if (!(this instanceof State)) return new State (run);
   this.run = run;
 }
 
