@@ -2,7 +2,8 @@
 //.
 //. [![Build Status](https://travis-ci.com/wearereasonablepeople/warp-state.svg?token=6J5xkcjgCPqtiPMbBtzj&branch=master)](https://travis-ci.com/wearereasonablepeople/warp-state) [![Coverage Status](https://coveralls.io/repos/github/wearereasonablepeople/warp-state/badge.svg?branch=diego%2Finitial&t=Bckm7f)](https://coveralls.io/github/wearereasonablepeople/warp-state?branch=diego%2Finitial)
 //.
-//. A state monad implementation compliant to [Fantasy Land][1].
+//. A state monad implementation compliant to [Fantasy Land][1]
+//. inspired by [fantasy-states][3].
 //.
 //. Usage in Node depends on `--experimental-modules`.
 //.
@@ -345,3 +346,4 @@ export function StateT(M) {
 
 //. [1]: https://github.com/fantasyland/fantasy-land
 //. [2]: https://github.com/standard-things/esm
+//. [3]: https://github.com/fantasyland/fantasy-states
