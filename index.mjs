@@ -295,6 +295,25 @@ export function StateT(M) {
     });
   };
 
+  //# StateT.hoist :: Monad m => StateT s m a -> (m a -> m b) -> StateT s m b
+  //.
+  //.
+  //. ```js
+  //.   const S = StateT (Monad);
+  //.   S.hoist (Z.of (S, 1)) (x => Z.map (v => v + 1, x))
+  //.   .run (null); // Monad({state: null, value: 2})
+  //. ```
+  StateT.hoist = function hoist(m) {
+    return function(f) {
+      return new StateT (function(state) {
+        return Z.map (
+          function(value) { return {state: state, value: value}; },
+          f (StateT.evalState (state) (m))
+        );
+      });
+    };
+  };
+
   //# StateT.fantasy-land/chain :: Monad m => StateT s m a ~> (a -> StateT s m b) -> StateT s m b
   //.
   //. Replace the State with a new one based on the result value

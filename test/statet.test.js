@@ -74,9 +74,22 @@ suite ('StateT', function() {
       var res = S.evalState (2) (S.lift (Z.of (State, rand))).run ();
       return assert.deepStrictEqual (res.value, rand);
     });
-    test ('should keep state untouched', function() {
-      var res = S.evalState () (S.lift (Z.of (State, 2))).run (rand);
-      return assert.deepStrictEqual (res.state, rand);
+  });
+
+  suite ('hoist', function() {
+    var rand = Math.random ();
+    test ('should return a StateT', function() {
+      assert.deepStrictEqual (
+        S.hoist (Z.of (S, 1)) (function() { return Z.of (State, 1); }).constructor,
+        S
+      );
+    });
+    test ('should replace the value', function() {
+      var s = S.hoist (Z.of (S, rand)) (function(m) {
+        return Z.map (function(v) { return v + 1; }, m);
+      });
+      var res = S.evalState (null) (s).run ();
+      return assert.deepStrictEqual (res.value, rand + 1);
     });
   });
 });
