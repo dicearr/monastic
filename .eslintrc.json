@@ -8,7 +8,17 @@
     {
       "files": ["*.md"],
       "plugins": ["markdown"],
-      "env": {"es6": true}
+      "env": {"es6": true},
+      "globals": {
+        "Z": true,
+        "State": true,
+        "StateT": true,
+        "Monad": true,
+        "put": true,
+        "evalState": true,
+        "execState": true,
+        "get": true
+      }
     }
   ]
 }

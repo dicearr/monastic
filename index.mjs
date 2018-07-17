@@ -37,7 +37,7 @@ export function State(run) {
 //. Replace the value with the given one.
 //.
 //. ```js
-//.   Z.of(State, 1).run(null) // {state: null, value: 1}
+//.   Z.of (State, 1).run (null); // {state: null, value: 1}
 //. ```
 
 State['fantasy-land/of'] = function of(value) {
@@ -51,7 +51,7 @@ State['fantasy-land/of'] = function of(value) {
 //. Map an old state to a new one. The old state is thrown away.
 //.
 //. ```js
-//.  put(2).run(1) // {state: 2, value: null}
+//.  put (2).run (1); // {state: 2, value: null}
 //. ```
 
 export function modify(f) {
@@ -65,7 +65,7 @@ export function modify(f) {
 //. Replace the state with the given one.
 //.
 //. ```js
-//.  put(2).run(1) // {state: 2, value: null}
+//.  put (2).run (1); // {state: 2, value: null}
 //. ```
 
 export function put(state) {
@@ -77,7 +77,7 @@ export function put(state) {
 //. Replace the returned value of the computation with the state.
 //.
 //. ```js
-//.  Z.chain(() => get, put(1)).run() // {state: 1, value: 1}
+//.  Z.chain (() => get, put (1)).run (); // {state: 1, value: 1}
 //. ```
 
 export var get = new State (function(state) {
@@ -90,7 +90,7 @@ export var get = new State (function(state) {
 //. the final value, discarding the final state.
 //.
 //. ```js
-//.  evalState()(Z.of (State, 1)) // 1
+//.  evalState () (Z.of (State, 1)); // 1
 //. ```
 
 export function evalState(state) {
@@ -105,7 +105,7 @@ export function evalState(state) {
 //. the final state, discarding the final value.
 //.
 //. ```js
-//.  execState()(put (1)) // 1
+//.  execState () (put (1)); // 1
 //. ```
 
 export function execState(state) {
@@ -120,11 +120,11 @@ export function execState(state) {
 //. the previous computation.
 //.
 //. ```js
-//.   Z.chain(
-//.     v => Z.of(State, v + 1),
-//.     Z.of(State, 1)
+//.   Z.chain (
+//.     v => Z.of (State, v + 1),
+//.     Z.of (State, 1)
 //.   )
-//.   .run(null) // {state: null, value: 2}
+//.   .run (null); // {state: null, value: 2}
 //. ```
 
 State.prototype['fantasy-land/chain'] = function chain(f) {
@@ -140,11 +140,11 @@ State.prototype['fantasy-land/chain'] = function chain(f) {
 //. Map an old value to a new one. The old value is thrown away.
 //.
 //. ```js
-//.   Z.map(
+//.   Z.map (
 //.     x => x + 1,
-//.     Z.of(State, 1)
+//.     Z.of (State, 1)
 //.   )
-//.   .run(null) // {state: null, value: 2}
+//.   .run (null); // {state: null, value: 2}
 //. ```
 
 State.prototype['fantasy-land/map'] = function map(f) {
@@ -157,11 +157,11 @@ State.prototype['fantasy-land/map'] = function map(f) {
 //. within the other. The state of the applied is thrown.
 //.
 //. ```js
-//.   Z.ap(
-//.     Z.of(State, x => x + 1),
-//.     Z.of(State, 1)
+//.   Z.ap (
+//.     Z.of (State, x => x + 1),
+//.     Z.of (State, 1)
 //.   )
-//.   .run(null) // {state: null, value: 2}
+//.   .run (null); // {state: null, value: 2}
 //. ```
 
 State.prototype['fantasy-land/ap'] = function ap(a) {
@@ -186,8 +186,8 @@ export function StateT(M) {
   //. Replace the value inside the monad with the given one.
   //.
   //. ```js
-  //.   const S = StateT(Monad)
-  //.   Z.of(S, 1).run(null) // Monad({state: 2, value: 1})
+  //.   const S = StateT (Monad);
+  //.   Z.of (S, 1).run (null); // Monad({state: 2, value: 1})
   //. ```
 
   StateT['fantasy-land/of'] = function of(value) {
@@ -202,9 +202,9 @@ export function StateT(M) {
   //. The old state is thrown away.
   //.
   //. ```js
-  //.   const {modify} = StateT(Monad)
-  //.   modify(x => x + 1)
-  //.   .run(2) // Monad({state: 3, value: null})
+  //.   const {modify} = StateT (Monad);
+  //.   modify (x => x + 1)
+  //.   .run (2); // Monad({state: 3, value: null})
   //. ```
 
   StateT.modify = function modify(f) {
@@ -218,8 +218,8 @@ export function StateT(M) {
   //. Replace the state inside the monad with the given one.
   //.
   //. ```js
-  //.   const {put} = StateT(Monad)
-  //.   put(2).run(1) // Monad({state: 2, value: null})
+  //.   const {put} = StateT (Monad);
+  //.   put (2).run (1); // Monad({state: 2, value: null})
   //. ```
 
   StateT.put = function put(state) {
@@ -232,9 +232,9 @@ export function StateT(M) {
   //. with the state.
   //.
   //. ```js
-  //.   const {put} = StateT(Monad)
-  //.   Z.chain(() => get, put(1))
-  //.   .run() // Monad({state: 1, value: 1})
+  //.   const {put} = StateT (Monad);
+  //.   Z.chain (() => get, put (1))
+  //.   .run (); // Monad({state: 1, value: 1})
   //. ```
 
   StateT.get = new StateT (function(state) {
@@ -247,8 +247,8 @@ export function StateT(M) {
   //. the final value wrapped in a monad, discarding the final state.
   //.
   //. ```js
-  //.   const S,{evalState} = StateT(Monad);
-  //.   evalState()(Z.of (S, 1)) // Monad(1)
+  //.   const S = StateT (Monad);
+  //.   S.evalState () (Z.of (S, 1)); // Monad(1)
   //. ```
   StateT.evalState = function evalState(state) {
     return function(m) {
@@ -265,8 +265,8 @@ export function StateT(M) {
   //. the final state wrapped in a monad, discarding the final value.
   //.
   //. ```js
-  //.   const {execState, put} = StateT(Monad);
-  //.   execState()(put(1)) // Monad(1)
+  //.   const {execState, put} = StateT (Monad);
+  //.   execState () (put (1)); // Monad(1)
   //. ```
   StateT.execState = function execState(state) {
     return function(m) {
@@ -283,12 +283,12 @@ export function StateT(M) {
   //. of the previous computation.
   //.
   //. ```js
-  //.   const S = StateT (Monad)
-  //.   Z.chain(
-  //.     v => Z.of(S, v + 1),
-  //.     Z.of(S, 1)
+  //.   const S = StateT (Monad);
+  //.   Z.chain (
+  //.     v => Z.of (S, v + 1),
+  //.     Z.of (S, 1)
   //.   )
-  //.   .run(null) // Monad({state: null, value: 2})
+  //.   .run (null); // Monad({state: null, value: 2})
   //. ```
   StateT.prototype['fantasy-land/chain'] = function(f) {
     var self = this;
@@ -306,12 +306,12 @@ export function StateT(M) {
   //. The old value is thrown away.
   //.
   //. ```js
-  //.   const S = StateT(Monad)
-  //.   Z.map(
+  //.   const S = StateT (Monad);
+  //.   Z.map (
   //.     x => x + 1,
-  //.     Z.of(S, 1)
+  //.     Z.of (S, 1)
   //.   )
-  //.   .run(null) // Monad({state: null, value: 2})
+  //.   .run (null); // Monad({state: null, value: 2})
   //. ```
   StateT.prototype['fantasy-land/map'] = function(f) {
     return this['fantasy-land/chain'] (compose (StateT['fantasy-land/of'], f));
@@ -323,12 +323,12 @@ export function StateT(M) {
   //. within the other. The state of the applied is thrown.
   //.
   //. ```js
-  //.   const S = StateT(Monad)
-  //.   Z.ap(
-  //.     Z.of(S, x => x + 1),
-  //.     Z.of(S, 1)
+  //.   const S = StateT (Monad);
+  //.   Z.ap (
+  //.     Z.of (S, x => x + 1),
+  //.     Z.of (S, 1)
   //.   )
-  //.   .run(null) // Monad({state: null, value: 2})
+  //.   .run (null); // Monad({state: null, value: 2})
   //. ```
   StateT.prototype['fantasy-land/ap'] = function(mf) {
     var mx = this;
