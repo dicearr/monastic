@@ -32,7 +32,7 @@ suite ('StateT', function() {
 
   suite ('put', function() {
     var state = Math.random ();
-    test ('should return a State', function() {
+    test ('should return a StateT', function() {
       assert.deepStrictEqual (S.put (0).constructor, S);
     });
     test ('should set the state', function() {
@@ -50,7 +50,7 @@ suite ('StateT', function() {
 
   suite ('get', function() {
     var state = Math.random ();
-    test ('should be a State', function() {
+    test ('should be a StateT', function() {
       assert.deepStrictEqual (S.get.constructor, S);
     });
     test ('should set both value and state to state', function() {
