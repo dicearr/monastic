@@ -105,7 +105,7 @@ export function StateT(M) {
 
   // put :: Monad m => s -> StateT s m Null
   StateT.put = function put(state) {
-    return modify (constant (state));
+    return StateT.modify (constant (state));
   };
 
   // evalState :: Monad m => s -> StateT s m a -> m a
