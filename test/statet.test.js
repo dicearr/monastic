@@ -10,14 +10,14 @@ var S = StateT (State);
 
 suite ('StateT', function() {
   suite ('modify', function() {
-    var state = Math.random ();
+    var rand = Math.random ();
     test ('should return a StateT (State)', function() {
       assert.deepStrictEqual (S.modify (Function.prototype).constructor, S);
     });
     test ('should modify the previous state', function() {
-      var m = S.execState (state) (S.modify (function(x) { return {x: x}; }));
+      var m = S.execState (rand) (S.modify (function(x) { return {x: x}; }));
       Z.map (
-        function(res) { return assert.deepStrictEqual (res, {x: state}); },
+        function(res) { return assert.deepStrictEqual (res, {x: rand}); },
         m
       );
     });
@@ -31,13 +31,13 @@ suite ('StateT', function() {
   });
 
   suite ('put', function() {
-    var state = Math.random ();
+    var rand = Math.random ();
     test ('should return a StateT', function() {
       assert.deepStrictEqual (S.put (0).constructor, S);
     });
     test ('should set the state', function() {
-      var res = S.execState () (S.put (state)).run ();
-      return assert.deepStrictEqual (res.value, state);
+      var res = S.execState () (S.put (rand)).run ();
+      return assert.deepStrictEqual (res.value, rand);
     });
     test ('should set the value to null', function() {
       var m = S.evalState () (S.put (1));
@@ -49,19 +49,34 @@ suite ('StateT', function() {
   });
 
   suite ('get', function() {
-    var state = Math.random ();
+    var rand = Math.random ();
     test ('should be a StateT', function() {
       assert.deepStrictEqual (S.get.constructor, S);
     });
     test ('should set both value and state to state', function() {
       var res = Z.chain (
         function() { return S.get; },
-        S.put (state)
+        S.put (rand)
       ).run ().run ();
       return assert.deepStrictEqual (res.value, {
-        state: state,
-        value: state
+        state: rand,
+        value: rand
       });
+    });
+  });
+
+  suite ('lift', function() {
+    var rand = Math.random ();
+    test ('should return a StateT', function() {
+      assert.deepStrictEqual (S.lift (Z.of (State, 1)).constructor, S);
+    });
+    test ('should replace the value', function() {
+      var res = S.evalState (2) (S.lift (Z.of (State, rand))).run ();
+      return assert.deepStrictEqual (res.value, rand);
+    });
+    test ('should keep state untouched', function() {
+      var res = S.evalState () (S.lift (Z.of (State, 2))).run (rand);
+      return assert.deepStrictEqual (res.state, rand);
     });
   });
 });

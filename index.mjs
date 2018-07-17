@@ -277,6 +277,24 @@ export function StateT(M) {
     };
   };
 
+  //# StateT.lift :: Monad m => Monad b -> StateT s m b
+  //.
+  //. Replace the value with the computation result of the given monad.
+  //.
+  //. ```js
+  //.   const {lift} = StateT (Monad);
+  //.   lift (Z.of (Monad, 1)).run (2); // Monad({state: 2, value: 1})
+  //. ```
+
+  StateT.lift = function lift(m) {
+    return new StateT (function(state) {
+      return Z.map (
+        function(value) { return {state: state, value: value}; },
+        m
+      );
+    });
+  };
+
   //# StateT.fantasy-land/chain :: Monad m => StateT s m a ~> (a -> StateT s m b) -> StateT s m b
   //.
   //. Replace the State with a new one based on the result value
