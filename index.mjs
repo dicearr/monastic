@@ -114,6 +114,30 @@ export function execState(state) {
   };
 }
 
+function next(v) { return {done: false, value: v}; }
+function done(v) { return {done: true, value: v}; }
+
+//# fantasy-land/chainRec :: ((a -> c, b -> c, v) -> State s c, v) -> State s b
+//.
+//. ```js
+//.   Z.chainRec (
+//.     State,
+//.     (next, done, v) => Z.of (State, v > 10 ? done (v) : next (v + 1)),
+//.     1
+//.   ).run (null); // {state: null, value: 11}
+//. ```
+
+State['fantasy-land/chainRec'] = function chainRec(f, v) {
+  return new State (function(state) {
+    var r = {state: state, value: next (v)};
+    while (!r.value.done) {
+      r = f (next, done, r.value.value).run (r.state);
+    }
+    return {state: r.state, value: r.value.value};
+  });
+};
+
+
 //# fantasy-land/chain :: State s a ~> (a -> State s b) -> State s b
 //.
 //. Replace the State with a new one based on the result value of

@@ -2,7 +2,8 @@ import {
   Functor,
   Apply,
   Applicative,
-  Chain
+  Chain,
+  ChainRec
 } from 'fantasy-laws';
 
 import {
@@ -12,7 +13,8 @@ import {
   string,
   bool,
   falsy,
-  constant as _k
+  constant as _k,
+  nat
 } from 'jsverify';
 
 import Z from 'sanctuary-type-classes';
@@ -87,6 +89,7 @@ function __of(x) {
 
 function sub3(x) { return x - 3; }
 function mul3(x) { return x * 3; }
+function low3(x) { return x < 3; }
 
 suite ('Compliance to Fantasy Land', function() {
   suite ('State', function() {
@@ -124,6 +127,18 @@ suite ('Compliance to Fantasy Land', function() {
         StateArb (number),
         _k (B (_of) (sub3)),
         _k (B (_of) (mul3))
+      ));
+    });
+
+    suite ('ChainRec', function() {
+      test ('equivalence', ChainRec (eq, State).equivalence (
+        _k (low3),
+        _k (B (_of) (sub3)),
+        _k (_of),
+        nat.smap (
+          function(x) { return Math.min (x, 100); },
+          function(x) { return x; }
+        )
       ));
     });
   });
