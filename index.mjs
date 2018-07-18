@@ -159,7 +159,7 @@ State.prototype['fantasy-land/chain'] = function chain(f) {
   });
 };
 
-//# map :: State s a ~> (a -> b) -> State s b
+//# fantasy-land/map :: State s a ~> (a -> b) -> State s b
 //.
 //. Map an old value to a new one. The old value is thrown away.
 //.
@@ -175,7 +175,7 @@ State.prototype['fantasy-land/map'] = function map(f) {
   return this['fantasy-land/chain'] (compose (State['fantasy-land/of'], f));
 };
 
-//# ap :: State s a ~> State s (a -> b) -> State s b
+//# fantasy-land/ap :: State s a ~> State s (a -> b) -> State s b
 //.
 //. Combine two State values by applying the value of one over the value
 //. within the other. The state of the applied is thrown.
@@ -205,7 +205,7 @@ export function StateT(M) {
 
   //. ## StateT
   //.
-  //# StateT.fantasy-land/of :: Monad m => a -> StateT s m a
+  //# fantasy-land/of :: Monad m => a -> StateT s m a
   //.
   //. Replace the value inside the monad with the given one.
   //.
@@ -220,7 +220,7 @@ export function StateT(M) {
      });
    };
 
-  //# StateT.modify :: Monad m => (s -> s) -> StateT s m Null
+  //# modify :: Monad m => (s -> s) -> StateT s m Null
   //.
   //. Map the old state contained in the monad to a new one.
   //. The old state is thrown away.
@@ -237,7 +237,7 @@ export function StateT(M) {
     });
   };
 
-  //# StateT.put :: Monad m => s -> StateT s m Null
+  //# put :: Monad m => s -> StateT s m Null
   //.
   //. Replace the state inside the monad with the given one.
   //.
@@ -250,7 +250,7 @@ export function StateT(M) {
     return StateT.modify (constant (state));
   };
 
-  //# StateT.get :: Monad m => StateT s m s
+  //# get :: Monad m => StateT s m s
   //.
   //. Replace the returned value of the computation, inside the monad,
   //. with the state.
@@ -265,7 +265,7 @@ export function StateT(M) {
     return Z.of (M, {state: state, value: state});
   });
 
-  //# StateT.evalState :: Monad m => s -> StateT s m a -> m a
+  //# evalState :: Monad m => s -> StateT s m a -> m a
   //.
   //. Evaluate a state computation with the given initial state and return
   //. the final value wrapped in a monad, discarding the final state.
@@ -283,7 +283,7 @@ export function StateT(M) {
     };
   };
 
-  //# StateT.execState :: Monad m => s -> StateT s m a -> m s
+  //# execState :: Monad m => s -> StateT s m a -> m s
   //.
   //. Evaluate a state computation with the given initial state and return
   //. the final state wrapped in a monad, discarding the final value.
@@ -301,7 +301,7 @@ export function StateT(M) {
     };
   };
 
-  //# StateT.lift :: Monad m => Monad b -> StateT s m b
+  //# lift :: Monad m => Monad b -> StateT s m b
   //.
   //. Replace the value with the computation result of the given monad.
   //.
@@ -319,7 +319,7 @@ export function StateT(M) {
     });
   };
 
-  //# StateT.hoist :: Monad m => StateT s m a -> (m a -> m b) -> StateT s m b
+  //# hoist :: Monad m => StateT s m a -> (m a -> m b) -> StateT s m b
   //.
   //.
   //. ```js
@@ -338,7 +338,7 @@ export function StateT(M) {
     };
   };
 
-  //# StateT.fantasy-land/chain :: Monad m => StateT s m a ~> (a -> StateT s m b) -> StateT s m b
+  //# fantasy-land/chain :: Monad m => StateT s m a ~> (a -> StateT s m b) -> StateT s m b
   //.
   //. Replace the State with a new one based on the result value
   //. of the previous computation.
@@ -361,7 +361,7 @@ export function StateT(M) {
     });
   };
 
-  //# StateT.fantasy-land/map :: Monad m => StateT s m a ~> (a -> b) -> StateT s m b
+  //# fantasy-land/map :: Monad m => StateT s m a ~> (a -> b) -> StateT s m b
   //.
   //. Map the old value wrapped in the monad to a new one.
   //. The old value is thrown away.
@@ -378,7 +378,7 @@ export function StateT(M) {
     return this['fantasy-land/chain'] (compose (StateT['fantasy-land/of'], f));
   };
 
-  //# StateT.fantasy-land/ap :: Monad m => State s m a ~> State s m (a -> b) -> State s m b
+  //# fantasy-land/ap :: Monad m => State s m a ~> State s m (a -> b) -> State s m b
   //.
   //. Combine two StateT values by applying the value of one over the value
   //. within the other. The state of the applied is thrown.
