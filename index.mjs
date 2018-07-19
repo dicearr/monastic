@@ -6,7 +6,6 @@
 //. inspired by [fantasy-states][3].
 //.
 //. Usage in Node depends on `--experimental-modules`.
-//.
 //. With older Node versions, use [`esm`][2]
 
 import Z from 'sanctuary-type-classes';
