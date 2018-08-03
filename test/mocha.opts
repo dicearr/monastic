@@ -1,0 +1,3 @@
+--bail
+--ui tdd
+--require esm
