@@ -1,7 +1,7 @@
 {
-  "name": "warp-state",
+  "name": "monastic",
   "version": "0.0.1",
-  "description": "State control Monad.",
+  "description": "A functional approach to stateful computations",
   "main": "index",
   "module": "index.mjs",
   "scripts": {
@@ -18,7 +18,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/wearereasonablepeople/warp-state.git"
+    "url": "git://github.com/wearereasonablepeople/monastic.git"
   },
   "files": [
     "/index.js",
