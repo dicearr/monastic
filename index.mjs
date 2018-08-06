@@ -1,7 +1,7 @@
-//. # Warp State
+//. # Monastic
 //.
-//. [![Build Status](https://travis-ci.com/wearereasonablepeople/warp-state.svg?branch=master)](https://travis-ci.com/wearereasonablepeople/warp-state)
-//. [![Coverage Status](https://coveralls.io/repos/github/wearereasonablepeople/warp-state/badge.svg?branch=master&t=Bckm7f)](https://coveralls.io/github/wearereasonablepeople/warp-state?branch=master)
+//. [![Build Status](https://travis-ci.com/wearereasonablepeople/monastic.svg?branch=master)](https://travis-ci.com/wearereasonablepeople/monastic)
+//. [![Coverage Status](https://coveralls.io/repos/github/wearereasonablepeople/monastic/badge.svg?branch=master&t=Bckm7f)](https://coveralls.io/github/wearereasonablepeople/monastic?branch=master)
 //. [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 //.
 //. A state monad implementation compliant to [Fantasy Land][1]
