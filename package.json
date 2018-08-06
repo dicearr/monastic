@@ -1,6 +1,6 @@
 {
   "name": "monastic",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A functional approach to stateful computations",
   "main": "index",
   "module": "index.mjs",
