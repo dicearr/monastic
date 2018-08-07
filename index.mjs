@@ -13,10 +13,12 @@
 
 import Z from 'sanctuary-type-classes';
 
-// compose :: (b -> c, a -> b) -> (a -> c)
-export function compose(f, g) {
-  return function(v) {
-    return f (g (v));
+// compose :: (b -> c) -> (a -> b) -> a -> c
+export function compose(f) {
+  return function(g) {
+    return function(v) {
+      return f (g (v));
+    };
   };
 }
 
@@ -207,7 +209,7 @@ State.prototype['fantasy-land/chain'] = function chain(f) {
 //. 2
 //. ```
 State.prototype['fantasy-land/map'] = function map(f) {
-  return this['fantasy-land/chain'] (compose (State['fantasy-land/of'], f));
+  return this['fantasy-land/chain'] (compose (State['fantasy-land/of']) (f));
 };
 
 //# State.prototype.fantasy-land/ap :: State s a ~> State s (a -> b) -> State s b
@@ -447,7 +449,9 @@ export function StateT(M) {
   //. Z.of (Maybe, 2)
   //. ```
   StateT.prototype['fantasy-land/map'] = function(f) {
-    return this['fantasy-land/chain'] (compose (StateT['fantasy-land/of'], f));
+    return this['fantasy-land/chain'] (
+      compose (StateT['fantasy-land/of']) (f)
+    );
   };
 
   //# StateT(m).prototype.fantasy-land/ap :: Monad m => State s m a ~> State s m (a -> b) -> State s m b

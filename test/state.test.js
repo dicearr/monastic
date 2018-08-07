@@ -1,5 +1,13 @@
-import assert from 'assert';
 import Z from 'sanctuary-type-classes';
+import {deepStrictEqual as eq} from 'assert';
+import {constant as _k, fun, nat} from 'jsverify';
+
+import {
+  property as _property,
+  stateEquals,
+  identity,
+  primitive
+} from './utils';
 
 import {
   put,
@@ -8,69 +16,92 @@ import {
   execState,
   evalState,
   State,
-  run
+  run,
+  compose
 } from '..';
 
+var property = _property (test);
+
 suite ('State', function() {
-  suite ('constructor', function() {
-    test ('should return a State even if used as a function', function() {
-      return assert.deepStrictEqual (State (Function.prototype).constructor, State);
-    });
+  test ('metadata', function() {
+    eq (typeof State, 'function');
+    eq (State.length, 1);
   });
-  suite ('modify', function() {
-    var state = Math.random ();
-    test ('should return a State', function() {
-      return assert.deepStrictEqual (modify (Function.prototype).constructor, State);
-    });
-    test ('should modify the previous state', function() {
-      var res = execState (state) (modify (function(x) { return {x: x}; }));
-      return assert.deepStrictEqual (res, {x: state});
-    });
-    test ('should set value to null', function() {
-      var res = evalState () (modify (Function.prototype));
-      return assert.deepStrictEqual (res, null);
-    });
+  test ('constructor', function() {
+    eq (State (42), new State (42));
   });
-
-  suite ('put', function() {
-    var state = Math.random ();
-    test ('should return a State', function() {
-      return assert.deepStrictEqual (put (0).constructor, State);
+  suite ('.put', function() {
+    test ('returns a state', function() {
+      eq (put (42) instanceof State, true);
+      eq (put.length, 1);
     });
-    test ('should set the state', function() {
-      var res = execState () (put (state));
-      return assert.deepStrictEqual (res, state);
-    });
-    test ('should set the value to null', function() {
-      var res = evalState () (put (1));
-      return assert.deepStrictEqual (res, null);
-    });
-  });
-
-  suite ('get', function() {
-    var state = Math.random ();
-    test ('should be a State', function() {
-      return assert.deepStrictEqual (get.constructor, State);
-    });
-    test ('should set both value and state to state', function() {
-      var m = Z.chain (
-        function() { return get; },
-        put (state)
+    test ('internal state is set to the given value', function() {
+      eq (execState (0) (put (42)), 42);
+      eq (
+        execState () (Z.chain (function() { return put (42); }, put (21))),
+        42
       );
-      const res = run () (m);
-      return assert.deepStrictEqual (res, {
-        state: state,
-        value: state
-      });
     });
   });
-
-  suite ('chainRec', function() {
+  suite ('.modify', function() {
+    test ('returns a state', function() {
+      eq (modify (Function.prototype) instanceof State, true);
+      eq (modify.length, 1);
+    });
+    test ('internal value is set to null', function() {
+      eq (evalState () (modify (Function.prototype)), null);
+      eq (
+        evalState () (Z.chain (
+          function() { return modify (Function.prototype); },
+          Z.of (State, 42)
+        )),
+        null
+      );
+    });
+    property ('put (a).chain (_ => modify (identity)) === put (a)', primitive, function(x) {
+        return stateEquals (primitive) (
+          Z.chain (function() { return modify (identity); }, put (x)),
+          put (x)
+        );
+    });
+    property (
+    'put (a).chain (_ => modify (compose (f) (g))) === put (a).chain (_ => modify (f)).chain (_ => modify (g))'
+    , _k (Math.sqrt), fun (nat), nat, function(f, g, x) {
+      return stateEquals (nat) (
+        Z.chain (function() { return modify (compose (f) (g)); }, put (x)),
+        Z.chain (
+          function() { return modify (f); },
+          Z.chain (function() { return modify (g); }, put (x))
+        )
+      );
+    });
+  });
+  suite ('.get', function() {
+    test ('is a state', function() {
+      eq (get instanceof State, true);
+    });
+    test ('sets the internal value to its state', function() {
+      eq (evalState (42) (get), 42);
+      eq (
+        evalState () (
+          Z.chain (function() { return get; }, put (42))
+        ),
+        42
+      );
+    });
+  });
+  suite ('.run', function() {
+    test ('returns internal state an value', function() {
+      eq (run (42) (get), {state: 42, value: 42});
+    });
+  });
+  suite ('.fantasy-land/chainRec', function() {
     test ('should be stack-safe', function() {
-      var m = Z.chainRec (State, function(next, done, v) {
-        return Z.of (State, v < 10000 ? next (v + 1) : done (v));
-      }, 1);
-      return assert.deepStrictEqual (evalState () (m), 10000);
+      eq (evalState () (
+        Z.chainRec (State, function(next, done, v) {
+          return Z.of (State, v < 10000 ? next (v + 1) : done (v));
+        }, 1)
+      ), 10000);
     });
   });
 });

@@ -3,16 +3,12 @@ import {
   Apply,
   Applicative,
   Chain,
-  ChainRec
+  ChainRec,
+  Monad
 } from 'fantasy-laws';
 
 import {
   letrec,
-  oneof,
-  number,
-  string,
-  bool,
-  falsy,
   constant as _k,
   nat
 } from 'jsverify';
@@ -20,81 +16,64 @@ import {
 import Z from 'sanctuary-type-classes';
 import Maybe from 'sanctuary-maybe';
 
-import {State, StateT, evalState, run} from '..';
+import {
+  primitive,
+  stateEquals
+} from './utils';
 
-// M can be any data structure compliant to fantasy-land Monad and Setoid
-var M = Maybe;
+import {
+  State,
+  StateT,
+  evalState,
+  compose as B
+} from '..';
 
-function StateArb(varb) {
-  var getValue = evalState ();
-  function toStr(m) { return JSON.stringify (getValue (m)); }
+var StateMaybe = StateT (Maybe);
+var eq = stateEquals (nat);
 
-  return varb.smap (_of, getValue, toStr);
-}
-
-function StateTArb(varb) {
-  var getValue = StateT (M).evalState ();
-  function toStr(m) { return JSON.stringify (getValue (m)); }
-  return varb.smap (__of, getValue, toStr);
-}
-
-function B(f) {
-  return function(g) {
-    return function(x) {
-      return f (g (x));
-    };
+function _of(type) {
+  return function(value) {
+    return Z.of (type, value);
   };
 }
 
-var {anyState} = letrec (function(tie) {
+function getValue(type) {
+  if (type.evalState) { return type.evalState (); }
+  return evalState ();
+}
+
+function Arb(type) {
+  return function(varb) {
+    function toStr(m) { return JSON.stringify (getValue (m)); }
+    return varb.smap (_of (type), getValue, toStr);
+  };
+}
+
+var {
+  anyState,
+  anyStateMaybe
+} = letrec (function(tie) {
   return {
-    anyState: StateArb (tie ('any')),
-    any: oneof (
-      number,
-      string,
-      bool,
-      falsy,
-      tie ('anyState')
-    )
+    anyState: Arb (State) (
+      tie ('any'), tie ('anyState')
+    ),
+    anyStateMaybe: Arb (StateMaybe) (
+      tie ('any'), tie ('anyStateMaybe')
+    ),
+    any: primitive
   };
 });
 
-var {anyStateT} = letrec (function(tie) {
-  return {
-    anyStateT: StateTArb (tie ('any')),
-    any: oneof (
-      number,
-      string,
-      bool,
-      falsy,
-      tie ('anyStateT')
-    )
-  };
-});
-
-function eq(actual, expected) {
-  var state = Math.random ();
-  return Z.equals (run (state) (actual), run (state) (expected));
-}
-
-function _of(x) {
-  return Z.of (State, x);
-}
-
-function __of(x) {
-  return Z.of (StateT (M), x);
-}
-
-function sub3(x) { return x - 3; }
-function mul3(x) { return x * 3; }
 function low3(x) { return x < 3; }
+function mul3(x) { return x * 3; }
+function sub3(x) { return x - 3; }
 
 suite ('Compliance to Fantasy Land', function() {
   suite ('State', function() {
     suite ('Functor', function() {
       test ('identity', Functor (eq).identity (anyState));
       test ('composition', Functor (eq).composition (
-        StateArb (number),
+        Arb (State) (nat),
         _k (sub3),
         _k (mul3)
       ));
@@ -102,37 +81,47 @@ suite ('Compliance to Fantasy Land', function() {
 
     suite ('Apply', function() {
       test ('composition', Apply (eq).composition (
-        StateArb (_k (sub3)),
-        StateArb (_k (mul3)),
-        StateArb (number)
+        Arb (State) (_k (sub3)),
+        Arb (State) (_k (mul3)),
+        Arb (State) (nat)
       ));
     });
 
     suite ('Applicative', function() {
-      test ('identity', Applicative (eq, State).identity (StateArb (number)));
+      test ('identity', Applicative (eq, State).identity (Arb (State) (anyState)));
       test ('homomorphism', Applicative (eq, State).homomorphism (
         _k (sub3),
-        number
+        nat
       ));
       test ('interchange', Applicative (eq, State).interchange (
-        StateArb (_k (sub3)),
-        number
+        Arb (State) (_k (sub3)),
+        nat
       ));
     });
 
     suite ('Chain', function() {
       test ('associativity', Chain (eq).associativity (
-        StateArb (number),
-        _k (B (_of) (sub3)),
-        _k (B (_of) (mul3))
+        Arb (State) (nat),
+        _k (B (_of (State)) (sub3)),
+        _k (B (_of (State)) (mul3))
+      ));
+    });
+
+    suite ('Monad', function() {
+      test ('leftIdentity', Monad (eq, State).leftIdentity (
+        _k (B (_of (State)) (mul3)),
+        nat
+      ));
+      test ('rightIdentity', Monad (eq, State).rightIdentity (
+        Arb (State) (anyState)
       ));
     });
 
     suite ('ChainRec', function() {
       test ('equivalence', ChainRec (eq, State).equivalence (
         _k (low3),
-        _k (B (_of) (sub3)),
-        _k (_of),
+        _k (B (_of (State)) (Math.sqrt)),
+        _k (_of (State)),
         nat.smap (
           function(x) { return Math.min (x, 100); },
           function(x) { return x; }
@@ -143,47 +132,57 @@ suite ('Compliance to Fantasy Land', function() {
 
   suite ('StateT', function() {
     suite ('Functor', function() {
-      test ('identity', Functor (eq).identity (anyStateT));
+      test ('identity', Functor (eq).identity (anyStateMaybe));
       test ('composition', Functor (eq).composition (
-        StateTArb (number),
+        Arb (StateMaybe) (nat),
         _k (sub3),
-        _k (mul3)
+        _k (sub3)
       ));
     });
 
     suite ('Apply', function() {
       test ('composition', Apply (eq).composition (
-        StateTArb (_k (sub3)),
-        StateTArb (_k (mul3)),
-        StateTArb (number)
+        Arb (StateMaybe) (_k (mul3)),
+        Arb (StateMaybe) (_k (sub3)),
+        Arb (StateMaybe) (nat)
       ));
     });
 
     suite ('Applicative', function() {
-      test ('identity', Applicative (eq, StateT (M)).identity (StateTArb (number)));
-      test ('homomorphism', Applicative (eq, StateT (M)).homomorphism (
-        _k (sub3),
-        number
+      test ('identity', Applicative (eq, StateMaybe).identity (Arb (StateMaybe) (anyStateMaybe)));
+      test ('homomorphism', Applicative (eq, StateMaybe).homomorphism (
+        _k (mul3),
+        nat
       ));
-      test ('interchange', Applicative (eq, StateT (M)).interchange (
-        StateTArb (_k (sub3)),
-        number
+      test ('interchange', Applicative (eq, StateMaybe).interchange (
+        Arb (StateMaybe) (_k (sub3)),
+        nat
       ));
     });
 
     suite ('Chain', function() {
       test ('associativity', Chain (eq).associativity (
-        StateTArb (number),
-        _k (B (__of) (sub3)),
-        _k (B (__of) (mul3))
+        Arb (StateMaybe) (anyStateMaybe),
+        _k (B (_of (StateMaybe)) (sub3)),
+        _k (B (_of (StateMaybe)) (mul3))
+      ));
+    });
+
+    suite ('Monad', function() {
+      test ('leftIdentity', Monad (eq, StateMaybe).leftIdentity (
+        _k (B (_of (StateMaybe)) (sub3)),
+        nat
+      ));
+      test ('rightIdentity', Monad (eq, StateMaybe).rightIdentity (
+        Arb (StateMaybe) (anyStateMaybe)
       ));
     });
 
     suite ('ChainRec', function() {
-      test ('equivalence', ChainRec (eq, StateT (M)).equivalence (
+      test ('equivalence', ChainRec (eq, StateMaybe).equivalence (
         _k (low3),
-        _k (B (__of) (sub3)),
-        _k (__of),
+        _k (B (_of (StateMaybe)) (Math.sqrt)),
+        _k (_of (StateMaybe)),
         nat.smap (
           function(x) { return Math.min (x, 100); },
           function(x) { return x; }
