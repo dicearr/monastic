@@ -7,12 +7,16 @@
 A state monad implementation compliant to [Fantasy Land][1]
 inspired by [fantasy-states][2].
 
+```console
+$ npm install --save monastic
+```
+
 ## State
-#### <a name="State" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L37">`State :: (s -⁠> {state :: s, value :: a}) -⁠> State s a`</a>
+#### <a name="State" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L41">`State :: (s -⁠> {state :: s, value :: a}) -⁠> State s a`</a>
 
 State [type representative][3].
 
-#### <a name="State.fantasy-land/of" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L45">`State.fantasy-land/of :: a -⁠> State s a`</a>
+#### <a name="State.fantasy-land/of" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L49">`State.fantasy-land/of :: a -⁠> State s a`</a>
 
 Fantasy Land compliant implementation of Of.
 
@@ -21,7 +25,7 @@ Fantasy Land compliant implementation of Of.
 1
 ```
 
-#### <a name="run" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L59">`run :: s -⁠> State s a -⁠> {state :: s, value :: a}`</a>
+#### <a name="run" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L63">`run :: s -⁠> State s a -⁠> {state :: s, value :: a}`</a>
 
 Evaluate a State instance with the given initial state and return both
 the internal state and value.
@@ -31,7 +35,7 @@ the internal state and value.
 {state: 1, value: 2}
 ```
 
-#### <a name="modify" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L74">`modify :: (s -⁠> s) -⁠> State s Null`</a>
+#### <a name="modify" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L78">`modify :: (s -⁠> s) -⁠> State s Null`</a>
 
 Creates a State instance which transforms its internal state using the
 given transformation function, and has a value of `null`.
@@ -51,7 +55,7 @@ internal state transformed.
 4
 ```
 
-#### <a name="put" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L99">`put :: s -⁠> State s Null`</a>
+#### <a name="put" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L103">`put :: s -⁠> State s Null`</a>
 
 Creates a State instance which sets its internal state to the given value,
 and has a value of `null`.
@@ -61,7 +65,7 @@ and has a value of `null`.
 2
 ```
 
-#### <a name="get" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L112">`get :: State s s`</a>
+#### <a name="get" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L116">`get :: State s s`</a>
 
 A State instance whose value is its internal state.
 
@@ -72,7 +76,7 @@ A State instance whose value is its internal state.
 1
 ```
 
-#### <a name="evalState" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L126">`evalState :: s -⁠> State s a -⁠> a`</a>
+#### <a name="evalState" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L130">`evalState :: s -⁠> State s a -⁠> a`</a>
 
 Evaluate a State instance with the given initial state and return
 the final value, discarding the final state.
@@ -82,7 +86,7 @@ the final value, discarding the final state.
 1
 ```
 
-#### <a name="execState" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L141">`execState :: s -⁠> State s a -⁠> s`</a>
+#### <a name="execState" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L145">`execState :: s -⁠> State s a -⁠> s`</a>
 
 Evaluate a State instance with the given initial state and return
 the final state, discarding the final value.
@@ -92,7 +96,7 @@ the final state, discarding the final value.
 1
 ```
 
-#### <a name="State.fantasy-land/chainRec" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L156">`State.fantasy-land/chainRec :: ((a -⁠> c, b -⁠> c, v) -⁠> State s c, v) -⁠> State s b`</a>
+#### <a name="State.fantasy-land/chainRec" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L160">`State.fantasy-land/chainRec :: ((a -⁠> c, b -⁠> c, v) -⁠> State s c, v) -⁠> State s b`</a>
 
 Fantasy Land compliant implementation of ChainRec.
 
@@ -104,7 +108,7 @@ Fantasy Land compliant implementation of ChainRec.
 11
 ```
 
-#### <a name="State.prototype.fantasy-land/chain" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L178">`State.prototype.fantasy-land/chain :: State s a ~> (a -⁠> State s b) -⁠> State s b`</a>
+#### <a name="State.prototype.fantasy-land/chain" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L182">`State.prototype.fantasy-land/chain :: State s a ~> (a -⁠> State s b) -⁠> State s b`</a>
 
 Fantasy Land compliant implementation of Chain.
 
@@ -115,7 +119,7 @@ Fantasy Land compliant implementation of Chain.
 2
 ```
 
-#### <a name="State.prototype.fantasy-land/map" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L196">`State.prototype.fantasy-land/map :: State s a ~> (a -⁠> b) -⁠> State s b`</a>
+#### <a name="State.prototype.fantasy-land/map" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L200">`State.prototype.fantasy-land/map :: State s a ~> (a -⁠> b) -⁠> State s b`</a>
 
 Fantasy Land compliant implementation of Map.
 
@@ -126,7 +130,7 @@ Fantasy Land compliant implementation of Map.
 2
 ```
 
-#### <a name="State.prototype.fantasy-land/ap" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L210">`State.prototype.fantasy-land/ap :: State s a ~> State s (a -⁠> b) -⁠> State s b`</a>
+#### <a name="State.prototype.fantasy-land/ap" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L214">`State.prototype.fantasy-land/ap :: State s a ~> State s (a -⁠> b) -⁠> State s b`</a>
 
 Fantasy Land compliant implementation of Ap.
 
@@ -137,7 +141,7 @@ Fantasy Land compliant implementation of Ap.
 2
 ```
 
-#### <a name="StateT" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L224">`StateT :: Monad m => m -⁠> StateT s m a`</a>
+#### <a name="StateT" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L228">`StateT :: Monad m => m -⁠> StateT s m a`</a>
 
 A state monad parametrised by the type m of the state to carry.
 
@@ -149,7 +153,7 @@ Z.of (Maybe, 42)
 ```
 
 ## StateT
-#### <a name="StateT(m).run" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L242">`StateT(m).run :: s -⁠> StateT s m a -⁠> m s a`</a>
+#### <a name="StateT(m).run" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L246">`StateT(m).run :: s -⁠> StateT s m a -⁠> m s a`</a>
 
 Evaluate a StateT(m) instance with the given initial state and return
 both the internal state and value wrapped in a monad.
@@ -159,7 +163,7 @@ both the internal state and value wrapped in a monad.
 Z.of (Maybe, {state: 1, value: 2})
 ```
 
-#### <a name="StateT(m).fantasy-land/of" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L253">`StateT(m).fantasy-land/of :: Monad m => a -⁠> StateT s m a`</a>
+#### <a name="StateT(m).fantasy-land/of" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L257">`StateT(m).fantasy-land/of :: Monad m => a -⁠> StateT s m a`</a>
 
 Fantasy Land compliant implementation of Of.
 
@@ -168,7 +172,7 @@ Fantasy Land compliant implementation of Of.
 Z.of (Maybe, 1)
 ```
 
-#### <a name="StateT(m).modify" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L267">`StateT(m).modify :: Monad m => (s -⁠> s) -⁠> StateT s m Null`</a>
+#### <a name="StateT(m).modify" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L271">`StateT(m).modify :: Monad m => (s -⁠> s) -⁠> StateT s m Null`</a>
 
 Creates a StateT(m) instance which transforms its internal state using
 the given transformation function, and has a value of `null`.
@@ -178,7 +182,7 @@ the given transformation function, and has a value of `null`.
 Z.of (Maybe, 3)
 ```
 
-#### <a name="StateT(m).put" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L282">`StateT(m).put :: Monad m => s -⁠> StateT s m Null`</a>
+#### <a name="StateT(m).put" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L286">`StateT(m).put :: Monad m => s -⁠> StateT s m Null`</a>
 
 Creates a StateT(m) instance which sets its internal state to the given
 value, and has a value of `null`.
@@ -188,7 +192,7 @@ value, and has a value of `null`.
 Z.of (Maybe, 2)
 ```
 
-#### <a name="StateT(m).get" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L295">`StateT(m).get :: Monad m => StateT s m s`</a>
+#### <a name="StateT(m).get" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L299">`StateT(m).get :: Monad m => StateT s m s`</a>
 
 A StateT(m) instance whose value is its internal state.
 
@@ -199,7 +203,7 @@ A StateT(m) instance whose value is its internal state.
 Z.of (Maybe, {state: 1, value: 1})
 ```
 
-#### <a name="StateT(m).evalState" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L309">`StateT(m).evalState :: Monad m => s -⁠> StateT s m a -⁠> m a`</a>
+#### <a name="StateT(m).evalState" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L313">`StateT(m).evalState :: Monad m => s -⁠> StateT s m a -⁠> m a`</a>
 
 Evaluate a StateT(m) instance with the given initial state and return
 the final value wrapped in a monad, discarding the final state.
@@ -209,7 +213,7 @@ the final value wrapped in a monad, discarding the final state.
 Z.of (Maybe, 1)
 ```
 
-#### <a name="StateT(m).execState" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L327">`StateT(m).execState :: Monad m => s -⁠> StateT s m a -⁠> m s`</a>
+#### <a name="StateT(m).execState" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L331">`StateT(m).execState :: Monad m => s -⁠> StateT s m a -⁠> m s`</a>
 
 Evaluate a StateT(m) instance with the given initial state and return
 the final state wrapped in a monad, discarding the final value.
@@ -219,7 +223,7 @@ the final state wrapped in a monad, discarding the final value.
 Z.of (Maybe, 1)
 ```
 
-#### <a name="StateT(m).lift" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L345">`StateT(m).lift :: Monad m => Monad b -⁠> StateT s m b`</a>
+#### <a name="StateT(m).lift" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L349">`StateT(m).lift :: Monad m => Monad b -⁠> StateT s m b`</a>
 
 Creates a StateT(m) instance and sets its value to the value wrapped
 in the given Monad.
@@ -231,7 +235,7 @@ in the given Monad.
 Z.of (Maybe, 1)
 ```
 
-#### <a name="StateT(m).fantasy-land/chainRec" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L365">`StateT(m).fantasy-land/chainRec :: ((a -⁠> c, b -⁠> c, v) -⁠> State s m c, v) -⁠> State s m b`</a>
+#### <a name="StateT(m).fantasy-land/chainRec" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L369">`StateT(m).fantasy-land/chainRec :: ((a -⁠> c, b -⁠> c, v) -⁠> State s m c, v) -⁠> State s m b`</a>
 
 Fantasy Land compliant implementation of ChainRec.
 
@@ -244,7 +248,7 @@ Fantasy Land compliant implementation of ChainRec.
 Z.of (Maybe, 11)
 ```
 
-#### <a name="StateT(m).hoist" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L392">`StateT(m).hoist :: Monad m => StateT s m a -⁠> (m a -⁠> m b) -⁠> StateT s m b`</a>
+#### <a name="StateT(m).hoist" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L396">`StateT(m).hoist :: Monad m => StateT s m a -⁠> (m a -⁠> m b) -⁠> StateT s m b`</a>
 
 Creates a StateT(m) instance which transforms its internal value using
 the given transformation function.
@@ -256,7 +260,7 @@ the given transformation function.
 Z.of (Maybe, 2)
 ```
 
-#### <a name="StateT(m).prototype.fantasy-land/chain" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L414">`StateT(m).prototype.fantasy-land/chain :: Monad m => StateT s m a ~> (a -⁠> StateT s m b) -⁠> StateT s m b`</a>
+#### <a name="StateT(m).prototype.fantasy-land/chain" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L418">`StateT(m).prototype.fantasy-land/chain :: Monad m => StateT s m a ~> (a -⁠> StateT s m b) -⁠> StateT s m b`</a>
 
 Fantasy Land compliant implementation of Chain.
 
@@ -267,7 +271,7 @@ Fantasy Land compliant implementation of Chain.
 Z.of (Maybe, 2)
 ```
 
-#### <a name="StateT(m).prototype.fantasy-land/map" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L434">`StateT(m).prototype.fantasy-land/map :: Monad m => StateT s m a ~> (a -⁠> b) -⁠> StateT s m b`</a>
+#### <a name="StateT(m).prototype.fantasy-land/map" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L438">`StateT(m).prototype.fantasy-land/map :: Monad m => StateT s m a ~> (a -⁠> b) -⁠> StateT s m b`</a>
 
 Fantasy Land compliant implementation of Map.
 
@@ -278,7 +282,7 @@ Fantasy Land compliant implementation of Map.
 Z.of (Maybe, 2)
 ```
 
-#### <a name="StateT(m).prototype.fantasy-land/ap" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.0/index.mjs#L448">`StateT(m).prototype.fantasy-land/ap :: Monad m => State s m a ~> State s m (a -⁠> b) -⁠> State s m b`</a>
+#### <a name="StateT(m).prototype.fantasy-land/ap" href="https://github.com/wearereasonablepeople/monastic/blob/v1.0.1/index.mjs#L452">`StateT(m).prototype.fantasy-land/ap :: Monad m => State s m a ~> State s m (a -⁠> b) -⁠> State s m b`</a>
 
 Fantasy Land compliant implementation of Ap.
 
