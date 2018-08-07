@@ -6,6 +6,10 @@
 //.
 //. A state monad implementation compliant to [Fantasy Land][1]
 //. inspired by [fantasy-states][2].
+//.
+//. ```console
+//. $ npm install --save monastic
+//. ```
 
 import Z from 'sanctuary-type-classes';
 

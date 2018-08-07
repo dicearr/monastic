@@ -20,6 +20,14 @@
     "type": "git",
     "url": "git://github.com/wearereasonablepeople/monastic.git"
   },
+  "keywords": [
+    "monad",
+    "monadic",
+    "state",
+    "state management",
+    "functional",
+    "fantasy-land"
+  ],
   "files": [
     "/index.js",
     "/index.mjs",
