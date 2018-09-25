@@ -5,7 +5,7 @@ export default {
   external: Object.keys (pkg.dependencies),
   output: {
     format: 'umd',
-    name: 'warpState',
+    name: 'Monastic',
     file: 'index.js',
     interop: false,
     globals: {
