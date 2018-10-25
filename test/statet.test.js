@@ -95,7 +95,7 @@ suite ('StateT', function() {
     test ('should throw if M is not ChainRec', function() {
       return assert.throws (
         function() { return Z.chainRec ([], Function.prototype, 0); },
-        {message: 'ChainRec.methods.chainRec(...) is not a function'}
+        /ChainRec\.methods\.chainRec\(\.\.\.\) is not a function/
       );
     });
     test ('should be stack-safe', function() {
