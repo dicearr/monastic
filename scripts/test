@@ -2,11 +2,7 @@
 
 set -euf -o pipefail
 
-source "${BASH_SOURCE%/*}/../node_modules/sanctuary-scripts/functions"
-
-branches="$(get min-branch-coverage)"
-
 npm run licensetest
 npm run deps
-node_modules/.bin/nyc --extension .mjs node_modules/.bin/mocha
-node_modules/.bin/nyc check-coverage --branches $branches
+
+sanctuary-test "$@"
