@@ -162,10 +162,9 @@ export function execState(state) {
 //. Fantasy Land compliant implementation of ChainRec.
 //.
 //. ```js
-//. > const f = (next, done, v) => Z.of (State, v > 10 ? done (v) : next (v + 1));
-//. > evalState (null) (
-//. .   Z.chainRec (State, f, 1)
-//. . )
+//. > const f = (next, done, v) => Z.of (State, v > 10 ? done (v) : next (v + 1))
+//.
+//. > evalState (null) (Z.chainRec (State, f, 1))
 //. 11
 //. ```
 State['fantasy-land/chainRec'] = function chainRec(f, v) {
@@ -230,8 +229,10 @@ State.prototype['fantasy-land/ap'] = function ap(a) {
 //. A state monad parametrised by the type m of the state to carry.
 //.
 //. ```js
-//. > const Maybe = require ('sanctuary-maybe');
-//. > const StateMaybe = StateT (Maybe);
+//. > import Maybe from 'sanctuary-maybe'
+//.
+//. > const StateMaybe = StateT (Maybe)
+//.
 //. > StateMaybe.evalState () (Z.of (StateMaybe, 42))
 //. Z.of (Maybe, 42)
 //. ```
