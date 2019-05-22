@@ -1,110 +1,164 @@
-import assert from 'assert';
 import Z from 'sanctuary-type-classes';
 import Maybe from 'sanctuary-maybe';
 
 import {
+  deepStrictEqual as eq,
+  throws
+} from 'assert';
+
+import {
+  constant as _k,
+  fun,
+  nat
+} from 'jsverify';
+
+import {
+  primitive,
+  identity,
+  stateEquals,
+  property as _prop,
+  assertEquals
+} from './utils';
+
+import {
   StateT,
-  run
+  run,
+  compose
 } from '..';
 
-// M can be any data structure compliant to fantasy-land Monad and Setoid
-var M = Maybe;
-var S = StateT (M);
+var S = StateT (Maybe);
+var property = _prop (test);
 
-suite ('StateT', function() {
+function mul3(x) { return x * 3; }
 
-  suite ('modify', function() {
-    var rand = Math.random ();
-    test ('should return a StateT(M)', function() {
-      return assert.deepStrictEqual (S.modify (Function.prototype).constructor, S);
-    });
-    test ('should receive the previous state as argument', function() {
-      var r;
-      S.execState (rand) (S.modify (function(x) { r = x; return Z.of (S, 1); }));
-      return assert.deepStrictEqual (r, rand);
-    });
-    test ('should replace the state with the function result', function() {
-      var m = S.execState (rand) (S.modify (function(x) { return {x: x}; }));
-      return assert.ok (Z.equals (m, Z.of (M, {x: rand})));
-    });
-    test ('should set value to null', function() {
-      var m = S.evalState (rand) (S.modify (Function.prototype));
-      return assert.ok (Z.equals (m, Z.of (M, null)));
-    });
+function hoistFun(fn) {
+  return function(mx) {
+    return Z.of (Maybe, fn (mx.value));
+  };
+}
+
+suite ('StateT (m)', function() {
+  test ('metadata', function() {
+    eq (typeof S, 'function');
+    eq (S.length, 1);
   });
-
-  suite ('put', function() {
-    var rand = Math.random ();
-    test ('should return a StateT(M)', function() {
-      return assert.deepStrictEqual (S.put (0).constructor, S);
+  suite ('.put', function() {
+    test ('returns a StateT (m)', function() {
+      eq (S.put (42) instanceof S, true);
+      eq (S.put.length, 1);
     });
-    test ('should set the state', function() {
-      var m = S.execState (null) (S.put (rand));
-      return assert.ok (Z.equals (m, Z.of (M, rand)));
-    });
-    test ('should set the value to null', function() {
-      var m = S.evalState (null) (S.put (1));
-      return assert.ok (Z.equals (m, Z.of (M, null)));
-    });
-  });
-
-  suite ('get', function() {
-    var rand = Math.random ();
-    test ('should be a StateT', function() {
-      return assert.deepStrictEqual (S.get.constructor, S);
-    });
-    test ('should set both value and state to state', function() {
-      var sm = Z.chain (function() { return S.get; }, S.put (rand));
-      var m = run () (sm);
-      return assert.ok (Z.equals (m, Z.of (M, {
-        state: rand,
-        value: rand
-      })));
-    });
-  });
-
-  suite ('lift', function() {
-    var rand = Math.random ();
-    test ('should return a StateT', function() {
-      return assert.deepStrictEqual (S.lift (Z.of (M, 1)).constructor, S);
-    });
-    test ('should replace the value', function() {
-      var m = S.evalState (2) (S.lift (Z.of (M, rand)));
-      return assert.ok (Z.equals (m, Z.of (M, rand)));
-    });
-  });
-
-  suite ('hoist', function() {
-    var rand = Math.random ();
-    test ('should return a StateT', function() {
-      return assert.deepStrictEqual (
-        S.hoist (Z.of (S, 1)) (function() { return Z.of (M, 1); }).constructor,
-        S
+    test ('internal state is set to the given value', function() {
+      assertEquals (S.execState (0) (S.put (42)), Z.of (Maybe, 42));
+      assertEquals (
+        S.execState () (Z.chain (function() { return S.put (42); }, S.put (21))),
+        Z.of (Maybe, 42)
       );
     });
-    test ('should replace the value', function() {
-      var s = S.hoist (Z.of (S, rand)) (function(m) {
-        return Z.map (function(v) { return v + 1; }, m);
+  });
+  suite ('.modify', function() {
+    test ('returns a StateT (m)', function() {
+      eq (S.modify (Function.prototype) instanceof S, true);
+      eq (S.modify.length, 1);
+    });
+    test ('internal value is set to null', function() {
+      assertEquals (S.evalState () (S.modify (Function.prototype)), Z.of (Maybe, null));
+      assertEquals (
+        S.evalState () (Z.chain (
+          function() { return S.modify (Function.prototype); },
+          Z.of (S, 42)
+        )),
+        Z.of (Maybe, null)
+      );
+    });
+    property ('S.put (a).chain (_ => S.modify (identity)) === S.put (a)', primitive, function(x) {
+        return stateEquals (primitive) (
+          Z.chain (function() { return S.modify (identity); }, S.put (x)),
+          S.put (x)
+        );
+    });
+    property ('S.put (a).chain (_ => S.modify (compose (f) (g))) === S.put (a).chain (_ => S.modify (f)).chain (_ => S.modify (g))'
+    , _k (Math.sqrt), fun (nat), nat, function(f, g, x) {
+      return stateEquals (nat) (
+        Z.chain (function() { return S.modify (compose (f) (g)); }, S.put (x)),
+        Z.chain (
+          function() { return S.modify (f); },
+          Z.chain (function() { return S.modify (g); }, S.put (x))
+        )
+      );
+    });
+  });
+  suite ('.get', function() {
+    test ('is a StateT (m)', function() {
+      eq (S.get instanceof S, true);
+    });
+    test ('sets the internal value to its state', function() {
+      eq (S.evalState (42) (S.get), Z.of (Maybe, 42));
+      eq (
+        S.evalState () (
+          Z.chain (function() { return S.get; }, S.put (42))
+        ),
+        Z.of (Maybe, 42)
+      );
+    });
+  });
+  suite ('.run', function() {
+    test ('returns the internal state an value wrapped in a Monad', function() {
+      eq (run (42) (S.get), Z.of (Maybe, {state: 42, value: 42}));
+    });
+  });
+  suite ('.lift', function() {
+    test ('returns a StateT (m)', function() {
+      eq (S.lift (Z.of (Maybe, 1)) instanceof S, true);
+    });
+    property ('S.lift (M.of (n)) === S.of (n)', primitive, function(x) {
+      return stateEquals (primitive) (
+        S.lift (Z.of (Maybe, x)),
+        Z.of (S, x)
+      );
+    });
+  });
+
+  suite ('.hoist', function() {
+    test ('returns a StateT (m)', function() {
+      eq (
+        S.hoist (Z.of (S, 1)) (Z.of (Maybe, Function.prototype)) instanceof S,
+        true
+      );
+    });
+    property ('S.hoist (Z.of (S, a)) (identity)) === Z.of (S, a)', primitive, function(x) {
+        return stateEquals (primitive) (
+          S.hoist (Z.of (S, x)) (identity),
+          Z.of (S, x)
+        );
+    });
+    property (
+      'S.hoist (Z.of (S, a)) (compose (f) (g))) === S.hoist (S.hoist (Z.of (S, a)) (g)) (f)',
+      _k (hoistFun (Math.sqrt)),
+      _k (hoistFun (mul3)),
+      nat,
+      function(f, g, x) {
+        return stateEquals (nat) (
+          S.hoist (Z.of (S, x)) (compose (f) (g)),
+          S.hoist (S.hoist (Z.of (S, x)) (g)) (f)
+        );
+      }
+    );
+  });
+  suite ('.fantasy-land/chainRec', function() {
+      test ('throws if the given monad is not ChainRec', function() {
+        return throws (
+          function() { return Z.chainRec ([], Function.prototype, 0); },
+          /ChainRec\.methods\.chainRec\(\.\.\.\) is not a function/
+        );
       });
-      var m = S.evalState (null) (s);
-      return assert.ok (Z.equals (m, Z.of (M, rand + 1)));
+      test ('is stack-safe', function() {
+        var s = Z.chainRec (S, function(next, done, v) {
+          return Z.of (S, v < 10000 ? next (v + 1) : done (v));
+        }, 1);
+        assertEquals (
+          S.evalState () (s),
+          Z.of (Maybe, 10000)
+        );
+      });
     });
-  });
-
-  suite ('chainRec', function() {
-    test ('should throw if M is not ChainRec', function() {
-      return assert.throws (
-        function() { return Z.chainRec ([], Function.prototype, 0); },
-        /ChainRec\.methods\.chainRec\(\.\.\.\) is not a function/
-      );
-    });
-    test ('should be stack-safe', function() {
-      var s = Z.chainRec (S, function(next, done, v) {
-        return Z.of (S, v < 10000 ? next (v + 1) : done (v));
-      }, 1);
-      var m = S.evalState () (s);
-      return assert.ok (Z.equals (m, Z.of (M, 10000)));
-    });
-  });
-
 });

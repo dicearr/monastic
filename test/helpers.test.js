@@ -1,15 +1,31 @@
-import assert from 'assert';
+import {
+  fun,
+  constant as _k,
+  nat
+} from 'jsverify';
+
+import {
+  property as _prop,
+  truthy
+} from './utils';
+
+var property = _prop (test);
 
 import {compose, constant} from '..';
 
 suite ('Helpers', function() {
-  test ('compose should compose two functions', function() {
-    function mul3(x) { return x * 3; }
-    function add3(x) { return x + 3; }
-    assert.deepStrictEqual (compose (mul3, add3) (3), 18);
-    assert.deepStrictEqual (compose (add3, mul3) (3), 12);
-  });
-  test ('constant should wrap a value into a function', function() {
-    assert.deepStrictEqual (constant (3) (), 3);
-  });
+  property (
+    'compose (f) (g) (x) === f (g (x))',
+    _k (Math.sqrt), fun (nat), nat,
+    function(f, g, x) {
+      return compose (f) (g) (x) === f (g (x));
+    }
+  );
+  property (
+    'constant (x) () === x',
+    truthy,
+    function(x) {
+      return constant (x) () === x;
+    }
+  );
 });
