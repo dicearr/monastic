@@ -6,7 +6,7 @@ export default {
   output: {
     format: 'umd',
     name: 'Monastic',
-    file: 'index.js',
+    file: 'umd.js',
     interop: false,
     globals: {
       'sanctuary-type-classes': 'sanctuaryTypeClasses'

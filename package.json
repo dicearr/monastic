@@ -2,7 +2,8 @@
   "name": "monastic",
   "version": "1.0.1",
   "description": "A functional approach to stateful computations",
-  "main": "index",
+  "type": "commonjs",
+  "main": "index.mjs",
   "module": "index.mjs",
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
@@ -10,7 +11,7 @@
     "doctest": "sanctuary-doctest",
     "licensetest": "license-checker --production --onlyAllow 'MIT'",
     "lint": "sanctuary-lint",
-    "prepublishOnly": "rollup -c rollup.config.mjs",
+    "prepublishOnly": "rollup -c rollup.config.js",
     "release": "sanctuary-release",
     "test": "npm run lint && sanctuary-test && npm run doctest"
   },
@@ -29,11 +30,11 @@
     "fantasy-land"
   ],
   "files": [
-    "/index.js",
     "/index.mjs",
     "/LICENSE",
     "/package.json",
-    "README.md"
+    "/README.md",
+    "/umd.js"
   ],
   "devDependencies": {
     "coveralls": "^3.0.2",

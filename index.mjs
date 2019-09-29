@@ -10,6 +10,13 @@
 //. ```console
 //. $ npm install --save monastic
 //. ```
+//.
+//. On Node 12 and up, you can use `import {State} from 'monastic'`.
+//. Older versions of Node require the use of
+//. [`esm`](https://github.com/standard-things/esm).
+//.
+//. Alternatively, a universal module can be obtained
+//. through `require('monastic/umd')`.
 
 import Z from 'sanctuary-type-classes';
 
