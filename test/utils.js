@@ -1,18 +1,8 @@
 import Z from 'sanctuary-type-classes';
-
 import {deepStrictEqual} from 'assert';
+import jsc from 'jsverify';
 
-import {
-  assert,
-  forall,
-  number,
-  oneof,
-  falsy,
-  string,
-  bool
-} from 'jsverify';
-
-import {run} from '../';
+import {run} from '../index.js';
 
 function eq(expected) {
   return function(actual) {
@@ -38,12 +28,12 @@ export function property(t) {
   return function(property) {
     var args = Array.prototype.slice.call (arguments, 1);
     return t (property, function() {
-      assert (forall.apply (this, args));
+      jsc.assert (jsc.forall.apply (this, args));
     });
   };
 }
 
 export function identity(x) { return x; }
 
-export var truthy = oneof (number, string, bool);
-export var primitive = oneof (truthy, falsy);
+export var truthy = jsc.oneof (jsc.number, jsc.string, jsc.bool);
+export var primitive = jsc.oneof (truthy, jsc.falsy);

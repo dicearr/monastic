@@ -7,7 +7,6 @@
   "module": "index.js",
   "scripts": {
     "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "deps": "depcheck --ignores='sanctuary-style'",
     "doctest": "sanctuary-doctest",
     "licensetest": "license-checker --production --onlyAllow 'MIT'",
     "lint": "sanctuary-lint",
@@ -37,12 +36,13 @@
     "/index.cjs"
   ],
   "devDependencies": {
+    "c8": "^5.0.4",
     "coveralls": "^3.0.2",
     "depcheck": "^0.6.9",
-    "esm": "^3.0.69",
     "fantasy-laws": "^1.1.0",
     "jsverify": "^0.8.3",
     "license-checker": "^20.1.0",
+    "oletus": "^2.0.0",
     "rollup": "^0.63.4",
     "sanctuary-maybe": "^1.0.0",
     "sanctuary-scripts": "^3.2.0"
