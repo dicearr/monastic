@@ -38,16 +38,16 @@
   "devDependencies": {
     "c8": "^5.0.4",
     "coveralls": "^3.0.2",
-    "depcheck": "^0.6.9",
+    "depcheck": "^0.8.3",
     "fantasy-laws": "^1.1.0",
     "jsverify": "^0.8.3",
-    "license-checker": "^20.1.0",
+    "license-checker": "^25.0.1",
     "oletus": "^2.0.0",
-    "rollup": "^0.63.4",
+    "rollup": "^1.25.2",
     "sanctuary-maybe": "^1.0.0",
     "sanctuary-scripts": "^3.2.0"
   },
   "dependencies": {
-    "sanctuary-type-classes": "^9.0.0"
+    "sanctuary-type-classes": "^11.0.0"
   }
 }
