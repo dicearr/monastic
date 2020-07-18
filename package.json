@@ -23,7 +23,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/wearereasonablepeople/monastic.git"
+    "url": "git://github.com/dicearr/monastic.git"
   },
   "files": [
     "/index.cjs",
