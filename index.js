@@ -1,6 +1,7 @@
 //. # Monastic
 //.
 //. [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+//. [![Code Coverage](https://codecov.io/gh/dicearr/monastic/branch/master/graph/badge.svg)](https://codecov.io/gh/dicearr/monastic)
 //.
 //. A state monad implementation compliant to [Fantasy Land][1]
 //. inspired by [fantasy-states][2].
