@@ -1,7 +1,5 @@
 //. # Monastic
 //.
-//. [![Build Status](https://travis-ci.com/wearereasonablepeople/monastic.svg?branch=master)](https://travis-ci.com/wearereasonablepeople/monastic)
-//. [![Coverage Status](https://coveralls.io/repos/github/wearereasonablepeople/monastic/badge.svg?branch=master&t=Bckm7f)](https://coveralls.io/github/wearereasonablepeople/monastic?branch=master)
 //. [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 //.
 //. A state monad implementation compliant to [Fantasy Land][1]
@@ -10,34 +8,27 @@
 //. ```console
 //. $ npm install --save monastic
 //. ```
+//.
+//. On Node 12 and up, you can use `import {State} from 'monastic'`.
+//. Older versions of Node require the use of
+//. [`esm`](https://github.com/standard-things/esm).
+//.
+//. Alternatively, a universal module can be obtained
+//. through `require('monastic/index.cjs')`.
 
 import Z from 'sanctuary-type-classes';
 
-// compose :: (b -> c) -> (a -> b) -> a -> c
-export function compose(f) {
-  return function(g) {
-    return function(v) {
-      return f (g (v));
-    };
-  };
-}
+//           compose :: (b -> c) -> (a -> b) -> a -> c
+export const compose = f => g => x => f (g (x));
 
-// constant :: a -> b -> a
-export function constant(v) {
-  return function() {
-    return v;
-  };
-}
+//           constant :: a -> b -> a
+export const constant = x => () => x;
 
-// next :: a -> {done :: Boolean, value :: a}
-function next(v) {
-  return {done: false, value: v};
-}
+//           next :: a -> {done :: Boolean, value :: a}
+export const next = v => ({done: false, value: v});
 
-// done :: b -> {done :: Boolean, value :: a}
-function done(v) {
-  return {done: true, value: v};
-}
+//           done :: b -> {done :: Boolean, value :: a}
+export const done = v => ({done: true, value: v});
 
 //. ## State
 //# State :: (s -> {state :: s, value :: a}) -> State s a
@@ -57,9 +48,7 @@ export function State(run) {
 //. 1
 //. ```
 State['fantasy-land/of'] = function of(value) {
-  return new State (function(state) {
-    return {state: state, value: value};
-  });
+  return new State (state => ({state: state, value: value}));
 };
 
 //# run :: s -> State s a -> {state :: s, value :: a}
@@ -72,9 +61,7 @@ State['fantasy-land/of'] = function of(value) {
 //. {state: 1, value: 2}
 //. ```
 export function run(state) {
-  return function(m) {
-    return m.run (state);
-  };
+  return m => m.run (state);
 }
 
 //# modify :: (s -> s) -> State s Null
@@ -97,9 +84,7 @@ export function run(state) {
 //. 4
 //. ```
 export function modify(f) {
-  return new State (function(state) {
-    return {state: f (state), value: null};
-  });
+  return new State (state => ({state: f (state), value: null}));
 }
 
 //# put :: s -> State s Null
@@ -125,9 +110,7 @@ export function put(state) {
 //. . )
 //. 1
 //. ```
-export var get = new State (function(state) {
-  return {state: state, value: state};
-});
+export const get = new State (state => ({state: state, value: state}));
 
 //# evalState :: s -> State s a -> a
 //.
@@ -139,9 +122,7 @@ export var get = new State (function(state) {
 //. 1
 //. ```
 export function evalState(state) {
-  return function(m) {
-    return m.run (state).value;
-  };
+  return m => m.run (state).value;
 }
 
 //# execState :: s -> State s a -> s
@@ -154,9 +135,7 @@ export function evalState(state) {
 //. 1
 //. ```
 export function execState(state) {
-  return function(m) {
-    return m.run (state).state;
-  };
+  return m => m.run (state).state;
 }
 
 //# State.fantasy-land/chainRec :: ((a -> c, b -> c, v) -> State s c, v) -> State s b
@@ -170,13 +149,13 @@ export function execState(state) {
 //. 11
 //. ```
 State['fantasy-land/chainRec'] = function chainRec(f, v) {
-  return new State (function(state) {
-    var r = {state: state, value: next (v)};
+  return new State ((state => {
+    let r = {state: state, value: next (v)};
     while (!r.value.done) {
       r = f (next, done, r.value.value).run (r.state);
     }
     return {state: r.state, value: r.value.value};
-  });
+  }));
 };
 
 
@@ -191,11 +170,10 @@ State['fantasy-land/chainRec'] = function chainRec(f, v) {
 //. 2
 //. ```
 State.prototype['fantasy-land/chain'] = function chain(f) {
-  var self = this;
-  return new State (function(s) {
-    var r = self.run (s);
+  return new State ((s => {
+    const r = this.run (s);
     return f (r.value).run (r.state);
-  });
+  }));
 };
 
 //# State.prototype.fantasy-land/map :: State s a ~> (a -> b) -> State s b
@@ -266,9 +244,7 @@ export function StateT(M) {
   //. Z.of (Maybe, 1)
   //. ```
   StateT['fantasy-land/of'] = function of(value) {
-     return new StateT (function(state) {
-       return Z.of (M, {state: state, value: value});
-     });
+     return new StateT (state => Z.of (M, {state: state, value: value}));
    };
 
   //# StateT(m).modify :: Monad m => (s -> s) -> StateT s m Null
@@ -281,9 +257,7 @@ export function StateT(M) {
   //. Z.of (Maybe, 3)
   //. ```
   StateT.modify = function modify(f) {
-    return new StateT (function(state) {
-      return Z.of (M, {state: f (state), value: null});
-    });
+    return new StateT (state => Z.of (M, {state: f (state), value: null}));
   };
 
   //# StateT(m).put :: Monad m => s -> StateT s m Null
@@ -309,9 +283,7 @@ export function StateT(M) {
   //. . )
   //. Z.of (Maybe, {state: 1, value: 1})
   //. ```
-  StateT.get = new StateT (function(state) {
-    return Z.of (M, {state: state, value: state});
-  });
+  StateT.get = new StateT (state => Z.of (M, {state: state, value: state}));
 
   //# StateT(m).evalState :: Monad m => s -> StateT s m a -> m a
   //.
@@ -323,12 +295,7 @@ export function StateT(M) {
   //. Z.of (Maybe, 1)
   //. ```
   StateT.evalState = function evalState(state) {
-    return function(m) {
-      return Z.map (
-        function(res) { return res.value; },
-        m.run (state)
-      );
-    };
+    return m => Z.map (res => res.value, m.run (state));
   };
 
   //# StateT(m).execState :: Monad m => s -> StateT s m a -> m s
@@ -341,12 +308,7 @@ export function StateT(M) {
   //. Z.of (Maybe, 1)
   //. ```
   StateT.execState = function execState(state) {
-    return function(m) {
-      return Z.map (
-        function(res) { return res.state; },
-        m.run (state)
-      );
-    };
+    return m => Z.map (res => res.state, m.run (state));
   };
 
   //# StateT(m).lift :: Monad m => Monad b -> StateT s m b
@@ -361,12 +323,9 @@ export function StateT(M) {
   //. Z.of (Maybe, 1)
   //. ```
   StateT.lift = function lift(m) {
-    return new StateT (function(state) {
-      return Z.map (
-        function(value) { return {state: state, value: value}; },
-        m
-      );
-    });
+    return new StateT (state => (
+      Z.map (value => ({state: state, value: value}), m)
+    ));
   };
 
   //# StateT(m).fantasy-land/chainRec :: ((a -> c, b -> c, v) -> State s m c, v) -> State s m b
@@ -382,16 +341,14 @@ export function StateT(M) {
   //. Z.of (Maybe, 11)
   //. ```
   StateT['fantasy-land/chainRec'] = function chainRec(f, v) {
-    return new StateT (function(state) {
-      var oState = state;
+    return new StateT (state => {
+      let oState = state;
       return Z.map (
-        function(value) { return {state: oState, value: value}; },
-        Z.chainRec (M, function(next, done, v) {
-          return Z.map (
-            function(res) { oState = res.state; return res.value; },
+        value => ({state: oState, value: value}),
+        Z.chainRec (M, (next, done, v) => Z.map (
+            res => { oState = res.state; return res.value; },
             f (next, done, v).run (oState)
-          );
-        }, v)
+          ), v)
       );
     });
   };
@@ -409,12 +366,10 @@ export function StateT(M) {
   //. ```
   StateT.hoist = function hoist(m) {
     return function(f) {
-      return new StateT (function(state) {
-        return Z.map (
-          function(value) { return {state: state, value: value}; },
-          f (StateT.evalState (state) (m))
-        );
-      });
+      return new StateT (state => Z.map (
+        value => ({state: state, value: value}),
+        f (StateT.evalState (state) (m))
+      ));
     };
   };
 
@@ -429,13 +384,10 @@ export function StateT(M) {
   //. Z.of (Maybe, 2)
   //. ```
   StateT.prototype['fantasy-land/chain'] = function(f) {
-    var self = this;
-    return new StateT (function(s) {
-      return Z.chain (
-        function(state) { return f (state.value).run (state.state); },
-        self.run (s)
-      );
-    });
+    return new StateT (s => Z.chain (
+      state => f (state.value).run (state.state),
+      this.run (s)
+    ));
   };
 
   //# StateT(m).prototype.fantasy-land/map :: Monad m => StateT s m a ~> (a -> b) -> StateT s m b
@@ -465,11 +417,11 @@ export function StateT(M) {
   //. Z.of (Maybe, 2)
   //. ```
   StateT.prototype['fantasy-land/ap'] = function(mf) {
-    var mx = this;
-    return new StateT (function(state) {
-      var get = StateT.evalState (state); // Monad {st, val}
+    const mx = this;
+    return new StateT (state => {
+      const get = StateT.evalState (state); // Monad {st, val}
       return Z.map (
-        function(value) { return {state: state, value: value}; },
+        value => ({state: state, value: value}),
         Z.ap (get (mf), get (mx))
       );
     });

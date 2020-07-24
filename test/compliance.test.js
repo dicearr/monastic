@@ -1,35 +1,23 @@
-import {
-  Functor,
-  Apply,
-  Applicative,
-  Chain,
-  ChainRec,
-  Monad
-} from 'fantasy-laws';
-
-import {
-  letrec,
-  constant as _k,
-  nat
-} from 'jsverify';
-
 import Z from 'sanctuary-type-classes';
 import Maybe from 'sanctuary-maybe';
+import jsc from 'jsverify';
+import FL from 'fantasy-laws';
+import test from 'oletus';
 
 import {
   primitive,
-  stateEquals
-} from './utils';
+  stateEquals,
+} from './utils.js';
 
 import {
   State,
   StateT,
   evalState,
-  compose as B
-} from '..';
+  compose as B,
+} from '../index.js';
 
-var StateMaybe = StateT (Maybe);
-var eq = stateEquals (nat);
+const StateMaybe = StateT (Maybe);
+const eq = stateEquals (jsc.nat);
 
 function _of(type) {
   return function(value) {
@@ -49,146 +37,113 @@ function Arb(type) {
   };
 }
 
-var {
+const {
   anyState,
-  anyStateMaybe
-} = letrec (function(tie) {
-  return {
+  anyStateMaybe,
+} = jsc.letrec (tie => ({
     anyState: Arb (State) (
       tie ('any'), tie ('anyState')
     ),
     anyStateMaybe: Arb (StateMaybe) (
       tie ('any'), tie ('anyStateMaybe')
     ),
-    any: primitive
-  };
-});
+    any: primitive,
+  }));
 
 function low3(x) { return x < 3; }
 function mul3(x) { return x * 3; }
 function sub3(x) { return x - 3; }
 
-suite ('Compliance to Fantasy Land', function() {
-  suite ('State', function() {
-    suite ('Functor', function() {
-      test ('identity', Functor (eq).identity (anyState));
-      test ('composition', Functor (eq).composition (
-        Arb (State) (nat),
-        _k (sub3),
-        _k (mul3)
-      ));
-    });
+test ('Functor identity', FL.Functor (eq).identity (anyState));
+test ('Functor composition', FL.Functor (eq).composition (
+  Arb (State) (jsc.nat),
+  jsc.constant (sub3),
+  jsc.constant (mul3)
+));
 
-    suite ('Apply', function() {
-      test ('composition', Apply (eq).composition (
-        Arb (State) (_k (sub3)),
-        Arb (State) (_k (mul3)),
-        Arb (State) (nat)
-      ));
-    });
+test ('Apply composition', FL.Apply (eq).composition (
+  Arb (State) (jsc.constant (sub3)),
+  Arb (State) (jsc.constant (mul3)),
+  Arb (State) (jsc.nat)
+));
 
-    suite ('Applicative', function() {
-      test ('identity', Applicative (eq, State).identity (Arb (State) (anyState)));
-      test ('homomorphism', Applicative (eq, State).homomorphism (
-        _k (sub3),
-        nat
-      ));
-      test ('interchange', Applicative (eq, State).interchange (
-        Arb (State) (_k (sub3)),
-        nat
-      ));
-    });
+test ('Applicative identity', FL.Applicative (eq, State).identity (Arb (State) (anyState)));
+test ('Applicative homomorphism', FL.Applicative (eq, State).homomorphism (
+  jsc.constant (sub3),
+  jsc.nat
+));
+test ('Applicative interchange', FL.Applicative (eq, State).interchange (
+  Arb (State) (jsc.constant (sub3)),
+  jsc.nat
+));
 
-    suite ('Chain', function() {
-      test ('associativity', Chain (eq).associativity (
-        Arb (State) (nat),
-        _k (B (_of (State)) (sub3)),
-        _k (B (_of (State)) (mul3))
-      ));
-    });
+test ('Chain associativity', FL.Chain (eq).associativity (
+  Arb (State) (jsc.nat),
+  jsc.constant (B (_of (State)) (sub3)),
+  jsc.constant (B (_of (State)) (mul3))
+));
 
-    suite ('Monad', function() {
-      test ('leftIdentity', Monad (eq, State).leftIdentity (
-        _k (B (_of (State)) (mul3)),
-        nat
-      ));
-      test ('rightIdentity', Monad (eq, State).rightIdentity (
-        Arb (State) (anyState)
-      ));
-    });
+test ('Monad leftIdentity', FL.Monad (eq, State).leftIdentity (
+  jsc.constant (B (_of (State)) (mul3)),
+  jsc.nat
+));
+test ('Monad rightIdentity', FL.Monad (eq, State).rightIdentity (
+  Arb (State) (anyState)
+));
 
-    suite ('ChainRec', function() {
-      test ('equivalence', ChainRec (eq, State).equivalence (
-        _k (low3),
-        _k (B (_of (State)) (Math.sqrt)),
-        _k (_of (State)),
-        nat.smap (
-          function(x) { return Math.min (x, 100); },
-          function(x) { return x; }
-        )
-      ));
-    });
-  });
+test ('ChainRec equivalence', FL.ChainRec (eq, State).equivalence (
+  jsc.constant (low3),
+  jsc.constant (B (_of (State)) (Math.sqrt)),
+  jsc.constant (_of (State)),
+  jsc.nat.smap (
+    x => Math.min (x, 100),
+    x => x
+  )
+));
 
-  suite ('StateT', function() {
-    suite ('Functor', function() {
-      test ('identity', Functor (eq).identity (anyStateMaybe));
-      test ('composition', Functor (eq).composition (
-        Arb (StateMaybe) (nat),
-        _k (sub3),
-        _k (sub3)
-      ));
-    });
+test ('StateT Functor identity', FL.Functor (eq).identity (anyStateMaybe));
+test ('StateT Functor composition', FL.Functor (eq).composition (
+  Arb (StateMaybe) (jsc.nat),
+  jsc.constant (sub3),
+  jsc.constant (sub3)
+));
 
-    suite ('Apply', function() {
-      test ('composition', Apply (eq).composition (
-        Arb (StateMaybe) (_k (mul3)),
-        Arb (StateMaybe) (_k (sub3)),
-        Arb (StateMaybe) (nat)
-      ));
-    });
+test ('StateT Apply composition', FL.Apply (eq).composition (
+  Arb (StateMaybe) (jsc.constant (mul3)),
+  Arb (StateMaybe) (jsc.constant (sub3)),
+  Arb (StateMaybe) (jsc.nat)
+));
 
-    suite ('Applicative', function() {
-      test ('identity', Applicative (eq, StateMaybe).identity (Arb (StateMaybe) (anyStateMaybe)));
-      test ('homomorphism', Applicative (eq, StateMaybe).homomorphism (
-        _k (mul3),
-        nat
-      ));
-      test ('interchange', Applicative (eq, StateMaybe).interchange (
-        Arb (StateMaybe) (_k (sub3)),
-        nat
-      ));
-    });
+test ('StateT Applicative identity', FL.Applicative (eq, StateMaybe).identity (Arb (StateMaybe) (anyStateMaybe)));
+test ('StateT Applicative homomorphism', FL.Applicative (eq, StateMaybe).homomorphism (
+  jsc.constant (mul3),
+  jsc.nat
+));
+test ('interchange', FL.Applicative (eq, StateMaybe).interchange (
+  Arb (StateMaybe) (jsc.constant (sub3)),
+  jsc.nat
+));
 
-    suite ('Chain', function() {
-      test ('associativity', Chain (eq).associativity (
-        Arb (StateMaybe) (anyStateMaybe),
-        _k (B (_of (StateMaybe)) (sub3)),
-        _k (B (_of (StateMaybe)) (mul3))
-      ));
-    });
+test ('StateT Chain associativity', FL.Chain (eq).associativity (
+  Arb (StateMaybe) (anyStateMaybe),
+  jsc.constant (B (_of (StateMaybe)) (sub3)),
+  jsc.constant (B (_of (StateMaybe)) (mul3))
+));
 
-    suite ('Monad', function() {
-      test ('leftIdentity', Monad (eq, StateMaybe).leftIdentity (
-        _k (B (_of (StateMaybe)) (sub3)),
-        nat
-      ));
-      test ('rightIdentity', Monad (eq, StateMaybe).rightIdentity (
-        Arb (StateMaybe) (anyStateMaybe)
-      ));
-    });
+test ('StateT Monad leftIdentity', FL.Monad (eq, StateMaybe).leftIdentity (
+  jsc.constant (B (_of (StateMaybe)) (sub3)),
+  jsc.nat
+));
+test ('StateT Monad rightIdentity', FL.Monad (eq, StateMaybe).rightIdentity (
+  Arb (StateMaybe) (anyStateMaybe)
+));
 
-    suite ('ChainRec', function() {
-      test ('equivalence', ChainRec (eq, StateMaybe).equivalence (
-        _k (low3),
-        _k (B (_of (StateMaybe)) (Math.sqrt)),
-        _k (_of (StateMaybe)),
-        nat.smap (
-          function(x) { return Math.min (x, 100); },
-          function(x) { return x; }
-        )
-      ));
-    });
-
-  });
-});
+test ('StateT ChainRec equivalence', FL.ChainRec (eq, StateMaybe).equivalence (
+  jsc.constant (low3),
+  jsc.constant (B (_of (StateMaybe)) (Math.sqrt)),
+  jsc.constant (_of (StateMaybe)),
+  jsc.nat.smap (
+    x => Math.min (x, 100),
+    x => x
+  )
+));
