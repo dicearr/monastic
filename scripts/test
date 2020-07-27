@@ -1,8 +1,13 @@
 #!/usr/bin/env bash
+set -eufo pipefail
 
-set -euf -o pipefail
+# shellcheck source=../node_modules/sanctuary-scripts/functions
+source "${BASH_SOURCE%/*}/../node_modules/sanctuary-scripts/functions"
 
-npm run licensetest
-npm run deps
+branches="$(get min-branch-coverage)"
 
-sanctuary-test "$@"
+c8 --check-coverage \
+   --branches "$branches" \
+   --reporter lcov \
+   --reporter text \
+   oletus

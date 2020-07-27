@@ -2,51 +2,49 @@
   "name": "monastic",
   "version": "1.0.1",
   "description": "A functional approach to stateful computations",
-  "main": "index",
-  "module": "index.mjs",
+  "tags": [
+    "fantasy-land",
+    "functional",
+    "monad",
+    "monadic",
+    "state monad",
+    "state"
+  ],
+  "type": "module",
+  "main": "index.cjs",
+  "module": "index.js",
   "scripts": {
-    "coverage": "nyc report --reporter=text-lcov | coveralls",
-    "deps": "depcheck --ignores='sanctuary-style'",
+    "build": "rollup -c rollup.config.js",
+    "codecov": "codecov",
     "doctest": "sanctuary-doctest",
-    "licensetest": "license-checker --production --onlyAllow 'MIT'",
     "lint": "sanctuary-lint",
-    "prepublishOnly": "rollup -c rollup.config.mjs",
     "release": "sanctuary-release",
     "test": "npm run lint && sanctuary-test && npm run doctest"
   },
-  "author": "Diego Ceresuela <dcerearr@gmail.com> (https://github.com/dicearr)",
-  "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git://github.com/wearereasonablepeople/monastic.git"
+    "url": "git://github.com/dicearr/monastic.git"
   },
-  "keywords": [
-    "monad",
-    "monadic",
-    "state",
-    "state management",
-    "functional",
-    "fantasy-land"
-  ],
   "files": [
+    "/index.cjs",
     "/index.js",
-    "/index.mjs",
     "/LICENSE",
     "/package.json",
-    "README.md"
+    "/README.md"
   ],
-  "devDependencies": {
-    "coveralls": "^3.0.2",
-    "depcheck": "^0.6.9",
-    "esm": "^3.0.69",
-    "fantasy-laws": "^1.1.0",
-    "jsverify": "^0.8.3",
-    "license-checker": "^20.1.0",
-    "rollup": "^0.63.4",
-    "sanctuary-maybe": "^1.0.0",
-    "sanctuary-scripts": "^3.2.0"
-  },
+  "author": "Diego Ceresuela <diego@ceresuela.es> (https://github.com/dicearr)",
+  "license": "MIT",
   "dependencies": {
     "sanctuary-type-classes": "^9.0.0"
+  },
+  "devDependencies": {
+    "c8": "^7.1.0",
+    "codecov": "^3.2.0",
+    "fantasy-laws": "^1.2.0",
+    "jsverify": "^0.8.4",
+    "oletus": "^3.0.0",
+    "rollup": "^2.0.0",
+    "sanctuary-maybe": "^2.1.0",
+    "sanctuary-scripts": "^4.0.0"
   }
 }

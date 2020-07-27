@@ -1,15 +1,15 @@
 import pkg from './package.json';
 
 export default {
-  input: 'index.mjs',
+  input: 'index.js',
   external: Object.keys (pkg.dependencies),
   output: {
     format: 'umd',
-    name: 'Monastic',
-    file: 'index.js',
+    file: 'index.cjs',
+    name: 'monastic',
     interop: false,
     globals: {
-      'sanctuary-type-classes': 'sanctuaryTypeClasses'
-    }
-  }
+      'sanctuary-type-classes': 'sanctuaryTypeClasses',
+    },
+  },
 };

@@ -7,7 +7,7 @@
 1. Create a branch named `<yourgithubusername>/<yourfeature>`
 1. Make one or more atomic commits
 1. Make sure the tests pass locally
-1. Create a pull-request on GitHub
+1. Create a pull request on GitHub
 
 ## Publishing a new version
 
