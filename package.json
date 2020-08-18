@@ -1,6 +1,6 @@
 {
   "name": "monastic",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "A functional approach to stateful computations",
   "tags": [
     "fantasy-land",
