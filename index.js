@@ -195,7 +195,11 @@ State.prototype['fantasy-land/map'] = function map(f) {
 //. 2
 //. ```
 State.prototype['fantasy-land/ap'] = function ap(a) {
-  return this['fantasy-land/map'] (evalState () (a));
+  return State (state => {
+    const f = evalState (state) (a);
+    const x = evalState (state) (this);
+    return {state: state, value: f (x)};
+  });
 };
 
 //# StateT :: Monad m => m -> StateT s m a
