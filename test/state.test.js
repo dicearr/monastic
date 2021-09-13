@@ -19,7 +19,6 @@ import {
   State,
   run,
   compose,
-  constant,
 } from '../index.js';
 
 const property = _property (test);
@@ -89,11 +88,6 @@ test ('.get sets the internal value to its state', () => {
 
 test ('.run returns internal state an value', () => {
   eq (run (42) (get), {state: 42, value: 42});
-});
-
-test ('.fantasy-land/ap propagates the state to both State instances', () => {
-  eq (evalState (42) (Z.ap (Z.of (State, x => x), get)), 42);
-  eq (evalState (42) (Z.ap (Z.map (constant, get), put (null))), 42);
 });
 
 test ('.fantasy-land/ap propagates state changes through the evaluation', () => {
