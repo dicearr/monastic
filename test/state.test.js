@@ -19,7 +19,6 @@ import {
   State,
   run,
   compose,
-  constant,
 } from '../index.js';
 
 const property = _property (test);
@@ -91,9 +90,11 @@ test ('.run returns internal state an value', () => {
   eq (run (42) (get), {state: 42, value: 42});
 });
 
-test ('.fantasy-land/ap propagates the initial state to both State instances', () => {
-  eq (evalState (42) (Z.ap (Z.of (State, x => x), get)), 42);
-  eq (evalState (42) (Z.ap (Z.map (constant, get), put (null))), 42);
+test ('.fantasy-land/ap propagates state changes through the evaluation', () => {
+  const statef = Z.chain (() => Z.of (State, x => x), modify (x => x.repeat (2)));
+  const statex = Z.chain (() => Z.of (State, null), modify (x => x + '!'));
+  const applied = Z.ap (statef, statex);
+  eq (execState ('a') (applied), 'aa!');
 });
 
 test ('.fantasy-land/chainRec should be stack-safe', () => {

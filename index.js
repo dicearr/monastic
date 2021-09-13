@@ -195,10 +195,10 @@ State.prototype['fantasy-land/map'] = function map(f) {
 //. 2
 //. ```
 State.prototype['fantasy-land/ap'] = function ap(a) {
-  return State (state => {
-    const f = evalState (state) (a);
-    const x = evalState (state) (this);
-    return {state: state, value: f (x)};
+  return State (state1 => {
+    const {state: state2, value: f} = run (state1) (a);
+    const {state: state3, value: x} = run (state2) (this);
+    return {state: state3, value: f (x)};
   });
 };
 
@@ -416,13 +416,13 @@ export function StateT(M) {
   //. ```
   StateT.prototype['fantasy-land/ap'] = function(mf) {
     const mx = this;
-    return new StateT (state => {
-      const get = StateT.evalState (state); // Monad {st, val}
-      return Z.map (
-        value => ({state: state, value: value}),
-        Z.ap (get (mf), get (mx))
-      );
-    });
+    return new StateT (state1 => Z.chain (
+      ({state: state2, value: f}) => Z.map (
+        ({state, value: x}) => ({state, value: f (x)}),
+        mx.run (state2)
+      ),
+      mf.run (state1)
+    ));
   };
 
   return StateT;

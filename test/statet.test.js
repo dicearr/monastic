@@ -139,3 +139,10 @@ test ('.fantasy-land/chainRec is stack-safe', () => {
     Z.of (Maybe, 10000)
   );
 });
+
+test ('.fantasy-land/ap propagates state changes through the evaluation', () => {
+  const statef = Z.chain (() => Z.of (S, x => x), S.modify (x => x.repeat (2)));
+  const statex = Z.chain (() => Z.of (S, null), S.modify (x => x + '!'));
+  const applied = Z.ap (statef, statex);
+  eq (S.execState ('a') (applied), Z.of (Maybe, 'aa!'));
+});
