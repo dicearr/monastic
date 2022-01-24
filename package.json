@@ -44,7 +44,7 @@
   "devDependencies": {
     "c8": "^7.1.0",
     "codecov": "^3.7.0",
-    "fantasy-laws": "^1.2.0",
+    "fantasy-laws": "^2.0.1",
     "jsverify": "^0.8.4",
     "oletus": "^3.0.0",
     "rollup": "^2.0.0",
