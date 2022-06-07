@@ -39,7 +39,7 @@
   "author": "Diego Ceresuela <diego@ceresuela.es> (https://github.com/dicearr)",
   "license": "MIT",
   "dependencies": {
-    "sanctuary-type-classes": "^12.0.0"
+    "sanctuary-type-classes": "^13.0.0"
   },
   "devDependencies": {
     "c8": "^7.1.0",

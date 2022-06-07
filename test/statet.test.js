@@ -129,9 +129,10 @@ property (
 );
 
 test ('.fantasy-land/chainRec throws if the given monad is not ChainRec', () => throws (
-    () => Z.chainRec ([], Function.prototype, 0),
-    /ChainRec\.methods\.chainRec\(\.\.\.\) is not a function/
-  ));
+  () => Z.chainRec ([], Function.prototype, 0),
+  /TypeError: staticMethod\(\.\.\.\) is not a function/
+));
+
 test ('.fantasy-land/chainRec is stack-safe', () => {
   const s = Z.chainRec (S, (next, done, v) => Z.of (S, v < 10000 ? next (v + 1) : done (v)), 1);
   assertEquals (
