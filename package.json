@@ -46,7 +46,7 @@
     "codecov": "^3.7.0",
     "fantasy-laws": "^2.0.1",
     "jsverify": "^0.8.4",
-    "oletus": "^3.0.0",
+    "oletus": "^4.0.0",
     "rollup": "^2.0.0",
     "sanctuary-maybe": "^2.1.0",
     "sanctuary-scripts": "^5.0.0"
