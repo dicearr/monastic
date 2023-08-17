@@ -1,4 +1,6 @@
-import pkg from './package.json';
+import {readFileSync} from 'fs';
+
+const pkg = JSON.parse (readFileSync ('./package.json'));
 
 export default {
   input: 'index.js',
@@ -7,7 +9,7 @@ export default {
     format: 'umd',
     file: 'index.cjs',
     name: 'monastic',
-    interop: false,
+    interop: 'esModule',
     globals: {
       'sanctuary-type-classes': 'sanctuaryTypeClasses',
     },

@@ -11,3 +11,10 @@ c8 --check-coverage \
    --reporter lcov \
    --reporter text \
    oletus
+
+npm run build \
+   && node -p "require('assert').deepStrictEqual(
+      Object.keys(require('.')),
+      ['State', 'StateT', 'compose', 'constant', 'done', 'evalState', 'execState', 'get', 'modify', 'next', 'put', 'run'],
+      'Bundled exports do not look correct',
+      ); 'Bundled exports look correct';"
