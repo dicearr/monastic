@@ -42,7 +42,7 @@
     "sanctuary-type-classes": "^13.0.0"
   },
   "devDependencies": {
-    "c8": "^8.0.1",
+    "c8": "^9.1.0",
     "codecov": "^3.7.0",
     "fantasy-laws": "^2.0.1",
     "jsverify": "^0.8.4",
