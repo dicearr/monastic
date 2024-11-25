@@ -49,6 +49,6 @@
     "oletus": "^4.0.0",
     "rollup": "^3.9.1",
     "sanctuary-maybe": "^2.1.0",
-    "sanctuary-scripts": "^5.0.0"
+    "sanctuary-scripts": "^7.0.0"
   }
 }
